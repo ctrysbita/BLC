@@ -70,3 +70,7 @@ bld/
 xcuserdata/
 ## Gcc Patch
 /*.gcno
+
+calc3c
+calc3i
+calc3g
