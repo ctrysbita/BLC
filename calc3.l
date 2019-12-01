@@ -1,7 +1,11 @@
 %{
 #include <stdlib.h>
 #include "calc3.h"
+#ifdef __APPLE__
+#include "y.tab.h"
+#else
 #include "calc3.tab.h"
+#endif
 void yyerror(char *);
 %}
 
