@@ -1,6 +1,10 @@
 #include <stdio.h>
 #include "calc3.h"
+#ifdef __APPLE__
+#include "y.tab.h"
+#else
 #include "calc3.tab.h"
+#endif
 
 int ex(nodeType *p) {
   if (!p) return 0;
@@ -38,10 +42,20 @@ int ex(nodeType *p) {
           return ex(p->opr.op[0]) * ex(p->opr.op[1]);
         case '/':
           return ex(p->opr.op[0]) / ex(p->opr.op[1]);
+        case '%':
+        return ex(p->opr.op[0]) % ex(p->opr.op[1]);
         case '<':
           return ex(p->opr.op[0]) < ex(p->opr.op[1]);
         case '>':
           return ex(p->opr.op[0]) > ex(p->opr.op[1]);
+        case PLUSE:
+          return sym[p->opr.op[0]->id.i] += ex(p->opr.op[1]);
+        case MINUSE:
+          return sym[p->opr.op[0]->id.i] -= ex(p->opr.op[1]);
+        case MULE:
+          return sym[p->opr.op[0]->id.i] *= ex(p->opr.op[1]);
+        case DIVE:
+          return sym[p->opr.op[0]->id.i] /= ex(p->opr.op[1]);
         case GE:
           return ex(p->opr.op[0]) >= ex(p->opr.op[1]);
         case LE:

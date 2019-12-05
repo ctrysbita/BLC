@@ -26,10 +26,14 @@ void yyerror(char *);
                 return INTEGER;
             }
 
-[-()<>=+*/;{}.] {
+[-()<>=+*/%;{}.] {
                 return *yytext;
              }
 
+"+="            return PLUSE;
+"-="            return MINUSE;
+"*="            return MULE;
+"/="            return DIVE;
 ">="            return GE;
 "<="            return LE;
 "=="            return EQ;

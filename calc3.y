@@ -28,7 +28,7 @@
 %nonassoc IFX
 %nonassoc ELSE
 
-%left GE LE EQ NE '>' '<'
+%left PLUSE MINUSE MULE DIVE GE LE EQ NE '>' '<'
 %left '+' '-'
 %left '*' '/'
 %nonassoc UMINUS
@@ -51,6 +51,10 @@ stmt:
         | expr ';'                       { $$ = $1; }
         | PRINT expr ';'                 { $$ = opr(PRINT, 1, $2); }
         | VARIABLE '=' expr ';'          { $$ = opr('=', 2, id($1), $3); }
+        | VARIABLE PLUSE expr ';'        { $$ = opr(PLUSE, 2, id($1), $3); }
+        | VARIABLE MINUSE expr ';'       { $$ = opr(MINUSE, 2, id($1), $3); }
+        | VARIABLE MULE expr ';'         { $$ = opr(MULE, 2, id($1), $3); }
+        | VARIABLE DIVE expr ';'         { $$ = opr(DIVE, 2, id($1), $3); }
         | WHILE '(' expr ')' stmt        { $$ = opr(WHILE, 2, $3, $5); }
         | IF '(' expr ')' stmt %prec IFX { $$ = opr(IF, 2, $3, $5); }
         | IF '(' expr ')' stmt ELSE stmt { $$ = opr(IF, 3, $3, $5, $7); }
@@ -70,6 +74,7 @@ expr:
         | expr '-' expr         { $$ = opr('-', 2, $1, $3); }
         | expr '*' expr         { $$ = opr('*', 2, $1, $3); }
         | expr '/' expr         { $$ = opr('/', 2, $1, $3); }
+        | expr '%' expr         { $$ = opr('%', 2, $1, $3); }
         | expr '<' expr         { $$ = opr('<', 2, $1, $3); }
         | expr '>' expr         { $$ = opr('>', 2, $1, $3); }
         | expr GE expr          { $$ = opr(GE, 2, $1, $3); }

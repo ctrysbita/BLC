@@ -7,7 +7,11 @@
 #include <string.h>
 
 #include "calc3.h"
+#ifdef __APPLE__
+#include "y.tab.h"
+#else
 #include "calc3.tab.h"
+#endif
 
 int del = 1; /* distance of graph columns */
 int eps = 3; /* distance of graph lines */
@@ -104,6 +108,9 @@ void exNode(nodeType *p, int c, int l, /* start column and line of node */
           break;
         case '/':
           s = "[/]";
+          break;
+        case '%':
+          s = "[%]";
           break;
         case '<':
           s = "[<]";

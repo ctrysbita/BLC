@@ -1,6 +1,10 @@
 #include <stdio.h>
 #include "calc3.h"
+#ifdef __APPLE__
+#include "y.tab.h"
+#else
 #include "calc3.tab.h"
+#endif
 
 static int lbl;
 
@@ -69,6 +73,9 @@ int ex(nodeType *p) {
               break;
             case '/':
               printf("\tdiv\n");
+              break;
+            case '%':
+              printf("\tmod\n");
               break;
             case '<':
               printf("\tcompLT\n");
