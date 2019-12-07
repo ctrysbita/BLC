@@ -118,6 +118,18 @@ void exNode(nodeType *p, int c, int l, /* start column and line of node */
         case '>':
           s = "[>]";
           break;
+        case PLUSE:
+          s = "[+=]";
+          break;
+        case MINUSE:
+          s = "[-=]";
+          break;
+        case MULE:
+          s = "[*=]";
+          break;
+        case DIVE:
+          s = "[/=]";
+          break;
         case GE:
           s = "[>=]";
           break;
