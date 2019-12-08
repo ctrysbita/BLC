@@ -1,19 +1,26 @@
 %{
+#include <string>
 #include <vector>
 #include "ast.hpp"
-#include <blc.tab.hpp>
+#include "blc.tab.hpp"
+
+void yyerror(std::string);
 %}
 
 %%
 
-"[0-9]*\.[0-9]+|[0-9]+" { yylval.value = new std::string(yytext); return DOUBLE_NUM; }
-";" { return SEMICOLON; }
+[0-9]*\.[0-9]+|[0-9]+ { yylval.value = new std::string(yytext); return DOUBLE_NUM; }
 
-"=" { yylval.token = ASSIGN; return ASSIGN; }
-"+" { yylval.token = ADD; return ADD; }
-"-" { yylval.token = SUB; return SUB; }
-"*" { yylval.token = MUL; return MUL; }
-"/" { yylval.token = DIV; return DIV; }
+";" return SEMICOLON;
+"=" return ASSIGN;
+
+"+" return ADD;
+"-" return SUB;
+"*" return MUL;
+"/" return DIV;
+
+[ \t\n]+ ;
+. yyerror("Lexical Error: Unknown character.");
 
 %%
 

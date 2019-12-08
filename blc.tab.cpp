@@ -68,12 +68,12 @@
 /* First part of user prologue.  */
 #line 1 "blc.y"
 
-#include <iostream>
 #include <string>
 #include <vector>
 #include "ast.hpp"
 #define YYERROR_VERBOSE
 
+extern void ex(AST*);
 int yylex(void);
 void yyerror(std::string);
 
@@ -116,12 +116,12 @@ extern int yydebug;
 # define YYTOKENTYPE
   enum yytokentype
   {
-    ASSIGN = 258,
-    ADD = 259,
-    SUB = 260,
-    MUL = 261,
-    DIV = 262,
-    DOUBLE_NUM = 263,
+    DOUBLE_NUM = 258,
+    ASSIGN = 259,
+    ADD = 260,
+    SUB = 261,
+    MUL = 262,
+    DIV = 263,
     SEMICOLON = 264
   };
 #endif
@@ -387,18 +387,18 @@ union yyalloc
 #endif /* !YYCOPY_NEEDED */
 
 /* YYFINAL -- State number of the termination state.  */
-#define YYFINAL  3
+#define YYFINAL  2
 /* YYLAST -- Last index in YYTABLE.  */
 #define YYLAST   13
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  10
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  6
+#define YYNNTS  4
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  12
+#define YYNRULES  9
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  18
+#define YYNSTATES  15
 
 #define YYUNDEFTOK  2
 #define YYMAXUTOK   264
@@ -445,8 +445,7 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    36,    36,    40,    41,    45,    49,    50,    54,    55,
-      56,    57,    58
+       0,    36,    36,    37,    41,    45,    46,    47,    48,    49
 };
 #endif
 
@@ -455,9 +454,9 @@ static const yytype_uint8 yyrline[] =
    First, the terminals, then, starting at YYNTOKENS, nonterminals.  */
 static const char *const yytname[] =
 {
-  "$end", "error", "$undefined", "ASSIGN", "ADD", "SUB", "MUL", "DIV",
-  "DOUBLE_NUM", "SEMICOLON", "$accept", "program", "function", "statement",
-  "statements", "expression", YY_NULLPTR
+  "$end", "error", "$undefined", "DOUBLE_NUM", "ASSIGN", "ADD", "SUB",
+  "MUL", "DIV", "SEMICOLON", "$accept", "program", "statement",
+  "expression", YY_NULLPTR
 };
 #endif
 
@@ -470,10 +469,10 @@ static const yytype_uint16 yytoknum[] =
 };
 # endif
 
-#define YYPACT_NINF -5
+#define YYPACT_NINF -6
 
 #define yypact_value_is_default(Yystate) \
-  (!!((Yystate) == (-5)))
+  (!!((Yystate) == (-6)))
 
 #define YYTABLE_NINF -1
 
@@ -484,8 +483,8 @@ static const yytype_uint16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-      -5,    12,     5,    -5,    -5,    -5,     5,    -4,    -5,     5,
-       5,     5,     5,    -5,     4,     4,    -5,    -5
+      -6,     9,    -6,    -6,    -6,    -5,    10,    10,    10,    10,
+      -6,     3,     3,    -6,    -6
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -493,20 +492,20 @@ static const yytype_int8 yypact[] =
      means the default is an error.  */
 static const yytype_uint8 yydefact[] =
 {
-       4,     0,     2,     1,     8,     6,     3,     0,     7,     0,
-       0,     0,     0,     5,     9,    10,    11,    12
+       3,     0,     1,     5,     2,     0,     0,     0,     0,     0,
+       4,     6,     7,     8,     9
 };
 
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-      -5,    -5,    -5,    -2,    -5,    -3
+      -6,    -6,    -6,    -1
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-      -1,     1,     2,     5,     6,     7
+      -1,     1,     4,     5
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -514,36 +513,34 @@ static const yytype_int8 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_uint8 yytable[] =
 {
-       9,    10,    11,    12,     8,    13,    14,    15,    16,    17,
-      11,    12,     3,     4
+       6,     7,     8,     9,    10,    11,    12,    13,    14,     2,
+       8,     9,     3,     3
 };
 
 static const yytype_uint8 yycheck[] =
 {
-       4,     5,     6,     7,     6,     9,     9,    10,    11,    12,
-       6,     7,     0,     8
+       5,     6,     7,     8,     9,     6,     7,     8,     9,     0,
+       7,     8,     3,     3
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
      symbol of state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
-       0,    11,    12,     0,     8,    13,    14,    15,    13,     4,
-       5,     6,     7,     9,    15,    15,    15,    15
+       0,    11,     0,     3,    12,    13,     5,     6,     7,     8,
+       9,    13,    13,    13,    13
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
-       0,    10,    11,    12,    12,    13,    14,    14,    15,    15,
-      15,    15,    15
+       0,    10,    11,    11,    12,    13,    13,    13,    13,    13
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
 static const yytype_uint8 yyr2[] =
 {
-       0,     2,     1,     2,     0,     2,     1,     2,     1,     3,
-       3,     3,     3
+       0,     2,     2,     0,     2,     1,     3,     3,     3,     3
 };
 
 
@@ -1229,66 +1226,48 @@ yyreduce:
     {
   case 2:
 #line 36 "blc.y"
-    { exit(0); }
-#line 1234 "blc.tab.cpp"
+    { ex((yyvsp[0].statement)); }
+#line 1231 "blc.tab.cpp"
     break;
 
-  case 3:
-#line 40 "blc.y"
-    { std::cout<< (yyvsp[0].statements)->size() << "ok"; }
-#line 1240 "blc.tab.cpp"
+  case 4:
+#line 41 "blc.y"
+    { (yyval.expression) = (yyvsp[-1].expression); }
+#line 1237 "blc.tab.cpp"
     break;
 
   case 5:
 #line 45 "blc.y"
-    { (yyval.expression) = (yyvsp[-1].expression); std::cout << "ok"; }
-#line 1246 "blc.tab.cpp"
+    { (yyval.expression) = new DoubleAST((yyvsp[0].value)); }
+#line 1243 "blc.tab.cpp"
     break;
 
   case 6:
-#line 49 "blc.y"
-    { (yyval.statements) = new std::vector<StatementAST*>(); (yyval.statements)->push_back((yyvsp[0].statement)); }
-#line 1252 "blc.tab.cpp"
+#line 46 "blc.y"
+    { (yyval.expression) = new BinaryOperationAST(ADD, (yyvsp[-2].expression), (yyvsp[0].expression)); }
+#line 1249 "blc.tab.cpp"
     break;
 
   case 7:
-#line 50 "blc.y"
-    { (yyvsp[-1].statements)->push_back((yyvsp[0].statement)); }
-#line 1258 "blc.tab.cpp"
+#line 47 "blc.y"
+    { (yyval.expression) = new BinaryOperationAST(SUB, (yyvsp[-2].expression), (yyvsp[0].expression)); }
+#line 1255 "blc.tab.cpp"
     break;
 
   case 8:
-#line 54 "blc.y"
-    { (yyval.expression) = new DoubleAST((yyvsp[0].value)); }
-#line 1264 "blc.tab.cpp"
+#line 48 "blc.y"
+    { (yyval.expression) = new BinaryOperationAST(MUL, (yyvsp[-2].expression), (yyvsp[0].expression)); }
+#line 1261 "blc.tab.cpp"
     break;
 
   case 9:
-#line 55 "blc.y"
-    { (yyval.expression) = new BinaryOperationAST((yyvsp[-1].token), (yyvsp[-2].expression), (yyvsp[0].expression)); }
-#line 1270 "blc.tab.cpp"
-    break;
-
-  case 10:
-#line 56 "blc.y"
-    { (yyval.expression) = new BinaryOperationAST((yyvsp[-1].token), (yyvsp[-2].expression), (yyvsp[0].expression)); }
-#line 1276 "blc.tab.cpp"
-    break;
-
-  case 11:
-#line 57 "blc.y"
-    { (yyval.expression) = new BinaryOperationAST((yyvsp[-1].token), (yyvsp[-2].expression), (yyvsp[0].expression)); }
-#line 1282 "blc.tab.cpp"
-    break;
-
-  case 12:
-#line 58 "blc.y"
-    { (yyval.expression) = new BinaryOperationAST((yyvsp[-1].token), (yyvsp[-2].expression), (yyvsp[0].expression)); }
-#line 1288 "blc.tab.cpp"
+#line 49 "blc.y"
+    { (yyval.expression) = new BinaryOperationAST(DIV, (yyvsp[-2].expression), (yyvsp[0].expression)); }
+#line 1267 "blc.tab.cpp"
     break;
 
 
-#line 1292 "blc.tab.cpp"
+#line 1271 "blc.tab.cpp"
 
       default: break;
     }
@@ -1520,7 +1499,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 61 "blc.y"
+#line 52 "blc.y"
 
 
 void yyerror(std::string s) {

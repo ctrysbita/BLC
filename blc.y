@@ -1,10 +1,10 @@
 %{
-#include <iostream>
 #include <string>
 #include <vector>
 #include "ast.hpp"
 #define YYERROR_VERBOSE
 
+extern void ex(AST*);
 int yylex(void);
 void yyerror(std::string);
 %}
@@ -18,10 +18,10 @@ void yyerror(std::string);
   std::vector<StatementAST*>* statements;
 }
 
+%token <value> DOUBLE_NUM
 %right <token> ASSIGN
 %left <token> ADD SUB
 %left <token> MUL DIV
-%token <value> DOUBLE_NUM
 %token <token> SEMICOLON
 
 %type <expression> expression
@@ -33,11 +33,7 @@ void yyerror(std::string);
 %%
 
 program:
-function  { exit(0); }
-;
-
-function:
-function statements  { std::cout<< $2->size() << "ok"; }
+program statement  { ex($2); }
 |
 ;
 
@@ -45,17 +41,12 @@ statement:
 expression SEMICOLON { $<expression>$ = $1; }
 ;
 
-statements:
-statement  { $$ = new std::vector<StatementAST*>(); $$->push_back($1); }
-| statements statement  { $1->push_back($2); }
-;
-
 expression:
 DOUBLE_NUM { $$ = new DoubleAST($1); }
-| expression ADD expression  { $$ = new BinaryOperationAST($2, $1, $3); }
-| expression SUB expression  { $$ = new BinaryOperationAST($2, $1, $3); }
-| expression MUL expression  { $$ = new BinaryOperationAST($2, $1, $3); }
-| expression DIV expression  { $$ = new BinaryOperationAST($2, $1, $3); }
+| expression ADD expression  { $$ = new BinaryOperationAST(ADD, $1, $3); }
+| expression SUB expression  { $$ = new BinaryOperationAST(SUB, $1, $3); }
+| expression MUL expression  { $$ = new BinaryOperationAST(MUL, $1, $3); }
+| expression DIV expression  { $$ = new BinaryOperationAST(DIV, $1, $3); }
 ;
 
 %%
