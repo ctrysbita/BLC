@@ -1,7 +1,7 @@
 %{
 #include <string>
 #include <vector>
-#include "ast.hpp"
+#include "ast.h"
 
 extern int yylex();
 extern void yyerror(std::string);

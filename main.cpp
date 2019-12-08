@@ -1,5 +1,5 @@
 #include <iostream>
-#include "ast.hpp"
+#include "ast.h"
 
 extern int yyparse();
 

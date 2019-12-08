@@ -1,7 +1,7 @@
 %{
 #include <string>
 #include <vector>
-#include "ast.hpp"
+#include "ast.h"
 #include "blc.tab.hpp"
 
 void yyerror(std::string);

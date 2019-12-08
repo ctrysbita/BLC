@@ -6,7 +6,7 @@ class AST {
   AST() {}
   ~AST() {}
 
-  virtual llvm::Value* GenCode() { return nullptr; }
+  virtual llvm::Value* GenIR() { return nullptr; }
 };
 
 class StatementAST : public AST {
@@ -14,7 +14,7 @@ class StatementAST : public AST {
   StatementAST() {}
   ~StatementAST() {}
 
-  virtual llvm::Value* GenCode() { return nullptr; }
+  virtual llvm::Value* GenIR() { return nullptr; }
 };
 
 class ExpressionAST : public AST {
@@ -22,7 +22,7 @@ class ExpressionAST : public AST {
   ExpressionAST() {}
   ~ExpressionAST() {}
 
-  virtual llvm::Value* GenCode() { return nullptr; }
+  virtual llvm::Value* GenIR() { return nullptr; }
 };
 
 class DoubleAST : public ExpressionAST {
@@ -33,7 +33,7 @@ class DoubleAST : public ExpressionAST {
   DoubleAST(std::string* value) : value_(std::stod(*value)) {}
   ~DoubleAST() {}
 
-  virtual llvm::Value* GenCode() { return nullptr; }
+  virtual llvm::Value* GenIR() { return nullptr; }
 };
 
 class BinaryOperationAST : public ExpressionAST {
@@ -47,5 +47,5 @@ class BinaryOperationAST : public ExpressionAST {
       : type_(type), lhs_(lhs), rhs_(rhs) {}
   ~BinaryOperationAST() {}
 
-  virtual llvm::Value* GenCode() { return nullptr; }
+  virtual llvm::Value* GenIR() { return nullptr; }
 };

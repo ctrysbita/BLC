@@ -1,0 +1,27 @@
+{
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "BuildDebug",
+      "type": "shell",
+      "command": "bash -c 'clang++ -g -std=c++17 `llvm-config --cxxflags --ldflags` `llvm-config --system-libs --libs core` -o main -I. blc.tab.cpp blc.yy.cpp main.cpp'",
+      "group": "build",
+      "dependsOn": "FlexGenerate"
+    },
+    {
+      "label": "FlexGenerate",
+      "type": "shell",
+      "command": "flex -o blc.yy.cpp blc.l",
+      "group": "build",
+      "dependsOn": "BisonGenerate"
+    },
+    {
+      "label": "BisonGenerate",
+      "type": "shell",
+      "command": "bison -d -o blc.tab.cpp blc.y",
+      "group": "build"
+    }
+  ]
+}
