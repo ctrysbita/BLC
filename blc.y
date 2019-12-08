@@ -2,11 +2,12 @@
 #include <string>
 #include <vector>
 #include "ast.hpp"
-#define YYERROR_VERBOSE
 
-extern void ex(AST*);
-int yylex(void);
-void yyerror(std::string);
+extern int yylex();
+extern void yyerror(std::string);
+extern void OnParsed();
+
+extern AST* ast;
 %}
 
 %union {
@@ -33,7 +34,7 @@ void yyerror(std::string);
 %%
 
 program:
-program statement  { ex($2); }
+program statement  { ast = $2; OnParsed(); }
 |
 ;
 

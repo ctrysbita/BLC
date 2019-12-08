@@ -71,13 +71,14 @@
 #include <string>
 #include <vector>
 #include "ast.hpp"
-#define YYERROR_VERBOSE
 
-extern void ex(AST*);
-int yylex(void);
-void yyerror(std::string);
+extern int yylex();
+extern void yyerror(std::string);
+extern void OnParsed();
 
-#line 81 "blc.tab.cpp"
+extern AST* ast;
+
+#line 82 "blc.tab.cpp"
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus
@@ -130,7 +131,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 12 "blc.y"
+#line 13 "blc.y"
 
   int token;
   std::string* value;
@@ -139,7 +140,7 @@ union YYSTYPE
   StatementAST* statement;
   std::vector<StatementAST*>* statements;
 
-#line 143 "blc.tab.cpp"
+#line 144 "blc.tab.cpp"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -445,7 +446,7 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    36,    36,    37,    41,    45,    46,    47,    48,    49
+       0,    37,    37,    38,    42,    46,    47,    48,    49,    50
 };
 #endif
 
@@ -1225,49 +1226,49 @@ yyreduce:
   switch (yyn)
     {
   case 2:
-#line 36 "blc.y"
-    { ex((yyvsp[0].statement)); }
-#line 1231 "blc.tab.cpp"
+#line 37 "blc.y"
+    { ast = (yyvsp[0].statement); OnParsed(); }
+#line 1232 "blc.tab.cpp"
     break;
 
   case 4:
-#line 41 "blc.y"
+#line 42 "blc.y"
     { (yyval.expression) = (yyvsp[-1].expression); }
-#line 1237 "blc.tab.cpp"
+#line 1238 "blc.tab.cpp"
     break;
 
   case 5:
-#line 45 "blc.y"
+#line 46 "blc.y"
     { (yyval.expression) = new DoubleAST((yyvsp[0].value)); }
-#line 1243 "blc.tab.cpp"
+#line 1244 "blc.tab.cpp"
     break;
 
   case 6:
-#line 46 "blc.y"
+#line 47 "blc.y"
     { (yyval.expression) = new BinaryOperationAST(ADD, (yyvsp[-2].expression), (yyvsp[0].expression)); }
-#line 1249 "blc.tab.cpp"
+#line 1250 "blc.tab.cpp"
     break;
 
   case 7:
-#line 47 "blc.y"
+#line 48 "blc.y"
     { (yyval.expression) = new BinaryOperationAST(SUB, (yyvsp[-2].expression), (yyvsp[0].expression)); }
-#line 1255 "blc.tab.cpp"
+#line 1256 "blc.tab.cpp"
     break;
 
   case 8:
-#line 48 "blc.y"
+#line 49 "blc.y"
     { (yyval.expression) = new BinaryOperationAST(MUL, (yyvsp[-2].expression), (yyvsp[0].expression)); }
-#line 1261 "blc.tab.cpp"
+#line 1262 "blc.tab.cpp"
     break;
 
   case 9:
-#line 49 "blc.y"
+#line 50 "blc.y"
     { (yyval.expression) = new BinaryOperationAST(DIV, (yyvsp[-2].expression), (yyvsp[0].expression)); }
-#line 1267 "blc.tab.cpp"
+#line 1268 "blc.tab.cpp"
     break;
 
 
-#line 1271 "blc.tab.cpp"
+#line 1272 "blc.tab.cpp"
 
       default: break;
     }
@@ -1499,7 +1500,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 52 "blc.y"
+#line 53 "blc.y"
 
 
 void yyerror(std::string s) {
