@@ -28,15 +28,26 @@ class ExpressionAST : public AST {
 };
 
 class BlockAST {
+ public:
+  union SymbolValueType {
+    double value;
+    const ExpressionAST* expression;
+  };
+
  private:
-  std::map<std::string, const ExpressionAST*> symbols_;
+  std::map<std::string, SymbolValueType> symbols_;
+  std::map<std::string, int> types_;
 
  public:
   BlockAST() {}
   ~BlockAST() {}
 
-  const ExpressionAST* GetSymbol(std::string name) { return symbols_[name]; }
-  void SetSymbol(std::string name, const ExpressionAST* value) {
+  inline const SymbolValueType get_symbol(std::string name) {
+    return symbols_[name];
+  }
+  inline int get_type(std::string name) { return types_[name]; }
+  inline void SetSymbol(std::string name, int type, SymbolValueType value) {
+    types_[name] = type;
     symbols_[name] = value;
   }
 };
@@ -73,23 +84,30 @@ class IdentifierAST : public ExpressionAST {
   IdentifierAST(std::string* name) : name_(*name) { delete name; }
   ~IdentifierAST() {}
 
-  virtual double eval(Context* context) const override {
-    auto exp = context->blocks_.top()->GetSymbol(name_);
-    return exp->eval(context);
-  }
+  virtual double eval(Context* context) const override;
 };
 
-class VariableAssignAST : public ExpressionAST {
+class VariableAssignmentAST : public ExpressionAST {
  public:
   const IdentifierAST* name_;
   const ExpressionAST* value_;
 
-  VariableAssignAST(IdentifierAST* name, ExpressionAST* value)
+  VariableAssignmentAST(IdentifierAST* name, ExpressionAST* value)
       : name_(name), value_(value) {}
-  ~VariableAssignAST() {}
+  ~VariableAssignmentAST() {}
 
-  virtual double eval(Context* context) const override {
-    context->blocks_.top()->SetSymbol(name_->name_, value_);
-    return value_->eval(context);
-  }
+  virtual double eval(Context* context) const override;
+};
+
+class ExpressionAssignmentAST : public ExpressionAST {
+ private:
+  const IdentifierAST* name_;
+  const ExpressionAST* value_;
+
+ public:
+  ExpressionAssignmentAST(IdentifierAST* name, ExpressionAST* value)
+      : name_(name), value_(value) {}
+  ~ExpressionAssignmentAST() {}
+
+  virtual double eval(Context* context) const override;
 };

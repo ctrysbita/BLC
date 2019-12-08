@@ -51,12 +51,13 @@ extern int yydebug;
   {
     IDENTIFIER = 258,
     DOUBLE_NUM = 259,
-    GE = 260,
-    LE = 261,
-    EQ = 262,
-    NE = 263,
-    GT = 264,
-    LT = 265
+    EXPR = 260,
+    GE = 261,
+    LE = 262,
+    EQ = 263,
+    NE = 264,
+    GT = 265,
+    LT = 266
   };
 #endif
 
@@ -72,7 +73,7 @@ union YYSTYPE
   StatementAST* statement;
   IdentifierAST* identifier;
 
-#line 76 "blc.tab.hpp"
+#line 77 "blc.tab.hpp"
 
 };
 typedef union YYSTYPE YYSTYPE;
