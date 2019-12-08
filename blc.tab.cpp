@@ -72,11 +72,12 @@
 #include <string>
 #include <vector>
 #include "ast.hpp"
+#define YYERROR_VERBOSE
 
 int yylex(void);
 void yyerror(std::string);
 
-#line 80 "blc.tab.cpp"
+#line 81 "blc.tab.cpp"
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus
@@ -115,13 +116,13 @@ extern int yydebug;
 # define YYTOKENTYPE
   enum yytokentype
   {
-    SEMICOLON = 258,
+    ASSIGN = 258,
     ADD = 259,
     SUB = 260,
     MUL = 261,
     DIV = 262,
-    ASSIGN = 263,
-    DOUBLE_NUM = 264
+    DOUBLE_NUM = 263,
+    SEMICOLON = 264
   };
 #endif
 
@@ -129,7 +130,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 11 "blc.y"
+#line 12 "blc.y"
 
   int token;
   std::string* value;
@@ -138,7 +139,7 @@ union YYSTYPE
   StatementAST* statement;
   std::vector<StatementAST*>* statements;
 
-#line 142 "blc.tab.cpp"
+#line 143 "blc.tab.cpp"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -386,18 +387,18 @@ union yyalloc
 #endif /* !YYCOPY_NEEDED */
 
 /* YYFINAL -- State number of the termination state.  */
-#define YYFINAL  6
+#define YYFINAL  3
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   11
+#define YYLAST   13
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  10
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  5
+#define YYNNTS  6
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  10
+#define YYNRULES  12
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  17
+#define YYNSTATES  18
 
 #define YYUNDEFTOK  2
 #define YYMAXUTOK   264
@@ -444,8 +445,8 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    34,    34,    38,    42,    43,    47,    48,    49,    50,
-      51
+       0,    36,    36,    40,    41,    45,    49,    50,    54,    55,
+      56,    57,    58
 };
 #endif
 
@@ -454,9 +455,9 @@ static const yytype_uint8 yyrline[] =
    First, the terminals, then, starting at YYNTOKENS, nonterminals.  */
 static const char *const yytname[] =
 {
-  "$end", "error", "$undefined", "SEMICOLON", "ADD", "SUB", "MUL", "DIV",
-  "ASSIGN", "DOUBLE_NUM", "$accept", "program", "statement", "statements",
-  "expression", YY_NULLPTR
+  "$end", "error", "$undefined", "ASSIGN", "ADD", "SUB", "MUL", "DIV",
+  "DOUBLE_NUM", "SEMICOLON", "$accept", "program", "function", "statement",
+  "statements", "expression", YY_NULLPTR
 };
 #endif
 
@@ -483,8 +484,8 @@ static const yytype_uint16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-       0,    -5,    10,    -5,     0,    -3,    -5,    -5,    -5,     0,
-       0,     0,     0,    -5,    -5,    -5,    -5
+      -5,    12,     5,    -5,    -5,    -5,     5,    -4,    -5,     5,
+       5,     5,     5,    -5,     4,     4,    -5,    -5
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -492,20 +493,20 @@ static const yytype_int8 yypact[] =
      means the default is an error.  */
 static const yytype_uint8 yydefact[] =
 {
-       0,     6,     0,     4,     2,     0,     1,     5,     3,     0,
-       0,     0,     0,     7,     8,     9,    10
+       4,     0,     2,     1,     8,     6,     3,     0,     7,     0,
+       0,     0,     0,     5,     9,    10,    11,    12
 };
 
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-      -5,    -5,     7,    -5,    -4
+      -5,    -5,    -5,    -2,    -5,    -3
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-      -1,     2,     3,     4,     5
+      -1,     1,     2,     5,     6,     7
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -513,36 +514,36 @@ static const yytype_int8 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_uint8 yytable[] =
 {
-       8,     9,    10,    11,    12,    13,    14,    15,    16,     1,
-       6,     7
+       9,    10,    11,    12,     8,    13,    14,    15,    16,    17,
+      11,    12,     3,     4
 };
 
 static const yytype_uint8 yycheck[] =
 {
-       3,     4,     5,     6,     7,     9,    10,    11,    12,     9,
-       0,     4
+       4,     5,     6,     7,     6,     9,     9,    10,    11,    12,
+       6,     7,     0,     8
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
      symbol of state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
-       0,     9,    11,    12,    13,    14,     0,    12,     3,     4,
-       5,     6,     7,    14,    14,    14,    14
+       0,    11,    12,     0,     8,    13,    14,    15,    13,     4,
+       5,     6,     7,     9,    15,    15,    15,    15
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
-       0,    10,    11,    12,    13,    13,    14,    14,    14,    14,
-      14
+       0,    10,    11,    12,    12,    13,    14,    14,    15,    15,
+      15,    15,    15
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
 static const yytype_uint8 yyr2[] =
 {
-       0,     2,     1,     2,     1,     2,     1,     3,     3,     3,
-       3
+       0,     2,     1,     2,     0,     2,     1,     2,     1,     3,
+       3,     3,     3
 };
 
 
@@ -1227,61 +1228,67 @@ yyreduce:
   switch (yyn)
     {
   case 2:
-#line 34 "blc.y"
-    { std::cout<< (yyvsp[0].statements)->size(); exit(0); }
-#line 1233 "blc.tab.cpp"
+#line 36 "blc.y"
+    { exit(0); }
+#line 1234 "blc.tab.cpp"
     break;
 
   case 3:
-#line 38 "blc.y"
-    { (yyval.expression) = (yyvsp[-1].expression); }
-#line 1239 "blc.tab.cpp"
-    break;
-
-  case 4:
-#line 42 "blc.y"
-    { (yyval.statements) = new std::vector<StatementAST*>(); (yyval.statements)->push_back((yyvsp[0].statement)); }
-#line 1245 "blc.tab.cpp"
+#line 40 "blc.y"
+    { std::cout<< (yyvsp[0].statements)->size() << "ok"; }
+#line 1240 "blc.tab.cpp"
     break;
 
   case 5:
-#line 43 "blc.y"
-    { (yyvsp[-1].statements)->push_back((yyvsp[0].statement)); }
-#line 1251 "blc.tab.cpp"
+#line 45 "blc.y"
+    { (yyval.expression) = (yyvsp[-1].expression); std::cout << "ok"; }
+#line 1246 "blc.tab.cpp"
     break;
 
   case 6:
-#line 47 "blc.y"
-    { (yyval.expression) = new DoubleAST((yyvsp[0].value)); }
-#line 1257 "blc.tab.cpp"
+#line 49 "blc.y"
+    { (yyval.statements) = new std::vector<StatementAST*>(); (yyval.statements)->push_back((yyvsp[0].statement)); }
+#line 1252 "blc.tab.cpp"
     break;
 
   case 7:
-#line 48 "blc.y"
-    { (yyval.expression) = new BinaryOperationAST((yyvsp[-1].token), (yyvsp[-2].expression), (yyvsp[0].expression)); }
-#line 1263 "blc.tab.cpp"
+#line 50 "blc.y"
+    { (yyvsp[-1].statements)->push_back((yyvsp[0].statement)); }
+#line 1258 "blc.tab.cpp"
     break;
 
   case 8:
-#line 49 "blc.y"
-    { (yyval.expression) = new BinaryOperationAST((yyvsp[-1].token), (yyvsp[-2].expression), (yyvsp[0].expression)); }
-#line 1269 "blc.tab.cpp"
+#line 54 "blc.y"
+    { (yyval.expression) = new DoubleAST((yyvsp[0].value)); }
+#line 1264 "blc.tab.cpp"
     break;
 
   case 9:
-#line 50 "blc.y"
+#line 55 "blc.y"
     { (yyval.expression) = new BinaryOperationAST((yyvsp[-1].token), (yyvsp[-2].expression), (yyvsp[0].expression)); }
-#line 1275 "blc.tab.cpp"
+#line 1270 "blc.tab.cpp"
     break;
 
   case 10:
-#line 51 "blc.y"
+#line 56 "blc.y"
     { (yyval.expression) = new BinaryOperationAST((yyvsp[-1].token), (yyvsp[-2].expression), (yyvsp[0].expression)); }
-#line 1281 "blc.tab.cpp"
+#line 1276 "blc.tab.cpp"
+    break;
+
+  case 11:
+#line 57 "blc.y"
+    { (yyval.expression) = new BinaryOperationAST((yyvsp[-1].token), (yyvsp[-2].expression), (yyvsp[0].expression)); }
+#line 1282 "blc.tab.cpp"
+    break;
+
+  case 12:
+#line 58 "blc.y"
+    { (yyval.expression) = new BinaryOperationAST((yyvsp[-1].token), (yyvsp[-2].expression), (yyvsp[0].expression)); }
+#line 1288 "blc.tab.cpp"
     break;
 
 
-#line 1285 "blc.tab.cpp"
+#line 1292 "blc.tab.cpp"
 
       default: break;
     }
@@ -1513,7 +1520,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 54 "blc.y"
+#line 61 "blc.y"
 
 
 void yyerror(std::string s) {

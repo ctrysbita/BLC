@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include "ast.hpp"
+#define YYERROR_VERBOSE
 
 int yylex(void);
 void yyerror(std::string);
@@ -17,10 +18,11 @@ void yyerror(std::string);
   std::vector<StatementAST*>* statements;
 }
 
-%token <token> SEMICOLON
-%left <token> ADD SUB MUL DIV
 %right <token> ASSIGN
+%left <token> ADD SUB
+%left <token> MUL DIV
 %token <value> DOUBLE_NUM
+%token <token> SEMICOLON
 
 %type <expression> expression
 %type <statement> statement
@@ -31,7 +33,12 @@ void yyerror(std::string);
 %%
 
 program:
-statements  { std::cout<< $1->size(); exit(0); }
+function  { exit(0); }
+;
+
+function:
+function statements  { std::cout<< $2->size() << "ok"; }
+|
 ;
 
 statement:

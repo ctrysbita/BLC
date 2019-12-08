@@ -49,13 +49,13 @@ extern int yydebug;
 # define YYTOKENTYPE
   enum yytokentype
   {
-    SEMICOLON = 258,
+    ASSIGN = 258,
     ADD = 259,
     SUB = 260,
     MUL = 261,
     DIV = 262,
-    ASSIGN = 263,
-    DOUBLE_NUM = 264
+    DOUBLE_NUM = 263,
+    SEMICOLON = 264
   };
 #endif
 
@@ -63,7 +63,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 11 "blc.y"
+#line 12 "blc.y"
 
   int token;
   std::string* value;
