@@ -5,7 +5,7 @@
 class AST {
  public:
   AST() {}
-  ~AST() {}
+  virtual ~AST() {}
 
   virtual llvm::Value* GenIR(Context* context) = 0;
 };
@@ -13,7 +13,7 @@ class AST {
 class StatementAST : public AST {
  public:
   StatementAST() {}
-  ~StatementAST() {}
+  virtual ~StatementAST() {}
 
   virtual llvm::Value* GenIR(Context* context) { return nullptr; }
 };
@@ -21,7 +21,7 @@ class StatementAST : public AST {
 class ExpressionAST : public AST {
  public:
   ExpressionAST() {}
-  ~ExpressionAST() {}
+  virtual ~ExpressionAST() {}
 
   virtual double eval(Context* context) const = 0;
   virtual llvm::Value* GenIR(Context* context) { return nullptr; }
@@ -40,7 +40,7 @@ class BlockAST {
 
  public:
   BlockAST() {}
-  ~BlockAST() {}
+  virtual ~BlockAST() {}
 
   inline const SymbolValueType get_symbol(std::string name) {
     return symbols_[name];
@@ -58,7 +58,7 @@ class DoubleAST : public ExpressionAST {
 
  public:
   DoubleAST(std::string* value) : value_(std::stod(*value)) {}
-  ~DoubleAST() {}
+  virtual ~DoubleAST() {}
 
   virtual double eval(Context* context) const override { return value_; }
 };
@@ -72,7 +72,7 @@ class BinaryOperationAST : public ExpressionAST {
  public:
   BinaryOperationAST(int type, ExpressionAST* lhs, ExpressionAST* rhs)
       : type_(type), lhs_(lhs), rhs_(rhs) {}
-  ~BinaryOperationAST() {}
+  virtual ~BinaryOperationAST() {}
 
   virtual double eval(Context* context) const override;
 };
@@ -82,7 +82,7 @@ class IdentifierAST : public ExpressionAST {
   const std::string name_;
 
   IdentifierAST(std::string* name) : name_(*name) { delete name; }
-  ~IdentifierAST() {}
+  virtual ~IdentifierAST() {}
 
   virtual double eval(Context* context) const override;
 };
@@ -94,7 +94,7 @@ class VariableAssignmentAST : public ExpressionAST {
 
   VariableAssignmentAST(IdentifierAST* name, ExpressionAST* value)
       : name_(name), value_(value) {}
-  ~VariableAssignmentAST() {}
+  virtual ~VariableAssignmentAST() {}
 
   virtual double eval(Context* context) const override;
 };
@@ -107,7 +107,7 @@ class ExpressionAssignmentAST : public ExpressionAST {
  public:
   ExpressionAssignmentAST(IdentifierAST* name, ExpressionAST* value)
       : name_(name), value_(value) {}
-  ~ExpressionAssignmentAST() {}
+  virtual ~ExpressionAssignmentAST() {}
 
   virtual double eval(Context* context) const override;
 };
