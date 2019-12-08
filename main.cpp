@@ -7,8 +7,12 @@ extern int yyparse();
 AST* ast = nullptr;
 
 void ex(AST* ast) {
-  std::cout << "Ohh";
-  std::cout << "Ohh";
+  auto ctx = new Context();
+
+  auto v = dynamic_cast<ExpressionAST*>(ast)->eval(ctx);
+  std::cout << v;
+
+  delete ast;
 }
 
 void OnParsed() { ex(ast); }

@@ -11,43 +11,51 @@ extern AST* ast;
 %}
 
 %union {
-  int token;
   std::string* value;
 
   ExpressionAST* expression;
   StatementAST* statement;
-  std::vector<StatementAST*>* statements;
+  IdentifierAST* identifier;
 }
 
-%token <value> DOUBLE_NUM
-%right <token> ASSIGN
-%left <token> ADD SUB
-%left <token> MUL DIV
-%token <token> SEMICOLON
+%token <value> IDENTIFIER DOUBLE_NUM
+%right '='
+%left GE LE EQ NE GT LT
+%left '+' '-'
+%left '*' '/' '%'
 
-%type <expression> expression
 %type <statement> statement
 %type <statements> statements
+%type <identifier> identifier
+%type <expression> expression
 
 %start program
 
 %%
 
 program:
-program statement  { ast = $2; OnParsed(); }
+program statement { ast = $2; OnParsed(); }
 |
 ;
 
 statement:
-expression SEMICOLON { $<expression>$ = $1; }
+';' { $$ = new StatementAST(); }
+| expression ';' { $<expression>$ = $1; }
 ;
 
 expression:
 DOUBLE_NUM { $$ = new DoubleAST($1); }
-| expression ADD expression  { $$ = new BinaryOperationAST(ADD, $1, $3); }
-| expression SUB expression  { $$ = new BinaryOperationAST(SUB, $1, $3); }
-| expression MUL expression  { $$ = new BinaryOperationAST(MUL, $1, $3); }
-| expression DIV expression  { $$ = new BinaryOperationAST(DIV, $1, $3); }
+| identifier { $$ = $1; }
+| identifier '=' expression { $$ = new VariableAssignAST($1, $3); }
+| '-' expression %prec ';' { $$ = $2; }
+| expression '+' expression { $$ = new BinaryOperationAST('+', $1, $3); }
+| expression '-' expression { $$ = new BinaryOperationAST('-', $1, $3); }
+| expression '*' expression { $$ = new BinaryOperationAST('*', $1, $3); }
+| expression '/' expression { $$ = new BinaryOperationAST('/', $1, $3); }
+;
+
+identifier:
+IDENTIFIER { $$ = new IdentifierAST($1); }
 ;
 
 %%

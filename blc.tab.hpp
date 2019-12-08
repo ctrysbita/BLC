@@ -49,13 +49,14 @@ extern int yydebug;
 # define YYTOKENTYPE
   enum yytokentype
   {
-    DOUBLE_NUM = 258,
-    ASSIGN = 259,
-    ADD = 260,
-    SUB = 261,
-    MUL = 262,
-    DIV = 263,
-    SEMICOLON = 264
+    IDENTIFIER = 258,
+    DOUBLE_NUM = 259,
+    GE = 260,
+    LE = 261,
+    EQ = 262,
+    NE = 263,
+    GT = 264,
+    LT = 265
   };
 #endif
 
@@ -65,12 +66,11 @@ union YYSTYPE
 {
 #line 13 "blc.y"
 
-  int token;
   std::string* value;
 
   ExpressionAST* expression;
   StatementAST* statement;
-  std::vector<StatementAST*>* statements;
+  IdentifierAST* identifier;
 
 #line 76 "blc.tab.hpp"
 
