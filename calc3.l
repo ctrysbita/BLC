@@ -1,5 +1,6 @@
 %{
 #include <stdlib.h>
+#include <string>
 #include "calc3.h"
 #ifdef __APPLE__
 #include "y.tab.h"
@@ -20,6 +21,12 @@ void yyerror(char *);
                 yylval.iValue = atoi(yytext);
                 return INTEGER;
             }
+
+[0-9]*[.][0-9]+   {
+                    std::string instr(yytext);
+                    yylval.iValue = std::stod(instr);
+                    return INTEGER;
+                   }
 
 [1-9][0-9]* {
                 yylval.iValue = atoi(yytext);

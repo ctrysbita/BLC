@@ -6,7 +6,7 @@
 #include "calc3.tab.h"
 #endif
 
-int ex(nodeType *p) {
+double ex(nodeType *p) {
   if (!p) return 0;
   switch (p->type) {
     case typeCon:
@@ -25,7 +25,7 @@ int ex(nodeType *p) {
             ex(p->opr.op[2]);
           return 0;
         case PRINT:
-          printf("%d\n", ex(p->opr.op[0]));
+          printf("%f\n", ex(p->opr.op[0]));
           return 0;
         case ';':
           ex(p->opr.op[0]);
@@ -43,7 +43,7 @@ int ex(nodeType *p) {
         case '/':
           return ex(p->opr.op[0]) / ex(p->opr.op[1]);
         case '%':
-        return ex(p->opr.op[0]) % ex(p->opr.op[1]);
+        return (int)ex(p->opr.op[0]) % (int)ex(p->opr.op[1]);
         case '<':
           return ex(p->opr.op[0]) < ex(p->opr.op[1]);
         case '>':

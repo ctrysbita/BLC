@@ -30,7 +30,7 @@ void exNode(nodeType *p, int c, int l, int *ce, int *cm);
 /*****************************************************************************/
 
 /* main entry point of the manipulation of the syntax tree */
-int ex(nodeType *p) {
+double ex(nodeType *p) {
   int rte, rtm;
 
   graphInit();
@@ -72,7 +72,7 @@ void exNode(nodeType *p, int c, int l, /* start column and line of node */
   s = word;
   switch (p->type) {
     case typeCon:
-      sprintf(word, "c(%d)", p->con.value);
+      sprintf(word, "c(%f)", p->con.value);
       break;
     case typeId:
       sprintf(word, "id(%c)", p->id.i + 'A');
@@ -231,13 +231,13 @@ void graphFinish() {
 }
 
 void graphBox(char *s, int *w, int *h) {
-  *w = strlen(s) + del;
+  *w = (int)strlen(s) + del;
   *h = 1;
 }
 
 void graphDrawBox(char *s, int c, int l) {
   int i;
-  graphTest(l, c + strlen(s) - 1 + del);
+  graphTest(l, c + (int)strlen(s) - 1 + del);
   for (i = 0; i < strlen(s); i++) {
     graph[l][c + i + del] = s[i];
   }

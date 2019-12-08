@@ -8,13 +8,13 @@
 
 static int lbl;
 
-int ex(nodeType *p) {
+double ex(nodeType *p) {
   int lbl1, lbl2;
 
   if (!p) return 0;
   switch (p->type) {
     case typeCon:
-      printf("\tpush\t%d\n", p->con.value);
+      printf("\tpush\t%f\n", p->con.value);
       break;
     case typeId:
       printf("\tpush\t%c\n", p->id.i + 'a');

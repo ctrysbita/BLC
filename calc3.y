@@ -7,17 +7,17 @@
     /* prototypes */
     nodeType *opr(int oper, int nops, ...);
     nodeType *id(int i);
-    nodeType *con(int value);
+    nodeType *con(double value);
     void freeNode(nodeType *p);
     int ex(nodeType *p);
     int yylex(void);
 
     void yyerror(char *s);
-    int sym[26];                    /* symbol table */
+    double sym[26];                    /* symbol table */
 %}
 
 %union {
-    int iValue;                 /* integer value */
+    double iValue;                 /* integer value */
     char sIndex;                /* symbol table index */
     nodeType *nPtr;             /* node pointer */
 };
@@ -86,11 +86,11 @@ expr:
 
 %%
 
-nodeType *con(int value) {
+nodeType *con(double value) {
     nodeType *p;
 
     /* allocate node */
-    if ((p = malloc(sizeof(nodeType))) == NULL)
+    if ((p = (nodeType *)malloc(sizeof(nodeType))) == NULL)
         yyerror("out of memory");
 
     /* copy information */
@@ -104,7 +104,7 @@ nodeType *id(int i) {
     nodeType *p;
 
     /* allocate node */
-    if ((p = malloc(sizeof(nodeType))) == NULL)
+    if ((p = (nodeType *)malloc(sizeof(nodeType))) == NULL)
         yyerror("out of memory");
 
     /* copy information */
@@ -120,7 +120,7 @@ nodeType *opr(int oper, int nops, ...) {
     int i;
 
     /* allocate node, extending op array */
-    if ((p = malloc(sizeof(nodeType) + (nops-1) * sizeof(nodeType *))) == NULL)
+    if ((p = (nodeType *)malloc(sizeof(nodeType) + (nops-1) * sizeof(nodeType *))) == NULL)
         yyerror("out of memory");
 
     /* copy information */
