@@ -52,6 +52,7 @@ DOUBLE_NUM { $$ = new DoubleAST($1); }
 | expression '-' expression { $$ = new BinaryOperationAST('-', $1, $3); }
 | expression '*' expression { $$ = new BinaryOperationAST('*', $1, $3); }
 | expression '/' expression { $$ = new BinaryOperationAST('/', $1, $3); }
+| '(' expression ')' { $$ = $2; }
 ;
 
 identifier:

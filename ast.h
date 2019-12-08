@@ -27,6 +27,20 @@ class ExpressionAST : public AST {
   virtual llvm::Value* GenIR(Context* context) { return nullptr; }
 };
 
+class BlockAST {
+ private:
+  std::map<std::string, const ExpressionAST*> symbols_;
+
+ public:
+  BlockAST() {}
+  ~BlockAST() {}
+
+  const ExpressionAST* GetSymbol(std::string name) { return symbols_[name]; }
+  void SetSymbol(std::string name, const ExpressionAST* value) {
+    symbols_[name] = value;
+  }
+};
+
 class DoubleAST : public ExpressionAST {
  private:
   const double value_;
@@ -60,8 +74,8 @@ class IdentifierAST : public ExpressionAST {
   ~IdentifierAST() {}
 
   virtual double eval(Context* context) const override {
-    // Get real value from symbol table.
-    return 0;
+    auto exp = context->blocks_.top()->GetSymbol(name_);
+    return exp->eval(context);
   }
 };
 
@@ -75,6 +89,7 @@ class VariableAssignAST : public ExpressionAST {
   ~VariableAssignAST() {}
 
   virtual double eval(Context* context) const override {
+    context->blocks_.top()->SetSymbol(name_->name_, value_);
     return value_->eval(context);
   }
 };
