@@ -1,6 +1,6 @@
 %{
 #include <string>
-#include <vector>
+#include <list>
 #include "ast.h"
 
 extern int yylex();
@@ -17,13 +17,13 @@ extern AST* ast;
   StatementAST* statement;
   IdentifierAST* identifier;
 
-  std::vector<AST*>* statements;
+  std::list<AST*>* statements;
 }
 
 %token <value> IDENTIFIER DOUBLE_NUM
 %token EXPR
 %right '='
-%left GE LEE EQ NE
+%left GE LE EQ NE
 %left '+' '-'
 %left '*' '/' '%'
 
@@ -44,11 +44,11 @@ program statement { ast = $2; OnParsed(); }
 statement:
 ';' { $$ = new StatementAST(); }
 | expression ';' { $<expression>$ = $1; }
-| '{' statements '}' { $$ = new BlockAST(); }
+| '{' statements '}' { $$ = (new BlockAST())->WithChildren($2); }
 ;
 
 statements:
-statement { $$ = new std::vector<AST*>(); $$->push_back($1); }
+statement { $$ = new std::list<AST*>(); $$->push_back($1); }
 | statements statement { $1->push_back($2); }
 ;
 
@@ -65,7 +65,7 @@ DOUBLE_NUM { $$ = new DoubleAST($1); }
 | expression '<' expression         { $$ = new BinaryOperationAST('<', $1, $3); }
 | expression '>' expression         { $$ = new BinaryOperationAST('>', $1, $3); }
 | expression GE expression          { $$ = new BinaryOperationAST(GE, $1, $3); }
-| expression LEE expression          { $$ = new BinaryOperationAST(LEE, $1, $3); }
+| expression LE expression          { $$ = new BinaryOperationAST(LE, $1, $3); }
 | expression NE expression          { $$ = new BinaryOperationAST(NE, $1, $3); }
 | expression EQ expression          { $$ = new BinaryOperationAST(EQ, $1, $3); }
 | '(' expression ')' { $$ = $2; }

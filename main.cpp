@@ -7,15 +7,12 @@ extern int yyparse();
 AST* ast = nullptr;
 
 auto ctx = new Context();
-void eval(AST* ast) {
+void OnParsed() {
   if (!ast) return;
-
   auto v = dynamic_cast<ExpressionAST*>(ast);
-  if (v) std::cout << "=> " << v->eval(ctx) << std::endl;
+  if (v) std::cout << "=> " << v->Evalutate(ctx) << std::endl;
   delete ast;
 }
-
-void OnParsed() { eval(ast); }
 
 int main() {
   ctx->blocks_.push(new BlockAST());

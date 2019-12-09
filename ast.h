@@ -1,6 +1,7 @@
 #pragma once
-#include "context.hpp"
 #include <llvm/IR/Value.h>
+#include <list>
+#include "context.hpp"
 
 class AST {
  public:
@@ -23,7 +24,7 @@ class ExpressionAST : public AST {
   ExpressionAST() {}
   virtual ~ExpressionAST() {}
 
-  virtual double eval(Context* context) const = 0;
+  virtual double Evalutate(Context* context) const = 0;
   virtual llvm::Value* GenIR(Context* context) { return nullptr; }
 };
 
@@ -38,6 +39,8 @@ class BlockAST : public StatementAST {
   std::map<std::string, SymbolValueType> symbols_;
   std::map<std::string, int> types_;
 
+  std::list<AST*> children_;
+
  public:
   BlockAST() {}
   virtual ~BlockAST() {}
@@ -46,9 +49,15 @@ class BlockAST : public StatementAST {
     return symbols_[name];
   }
   inline int get_type(std::string name) { return types_[name]; }
-  inline void SetSymbol(std::string name, int type, SymbolValueType value) {
+  inline void set_symbol(std::string name, int type, SymbolValueType value) {
     types_[name] = type;
     symbols_[name] = value;
+  }
+
+  BlockAST* WithChildren(std::list<AST*>* asts) {
+    children_.splice(children_.end(), *asts);
+    delete asts;
+    return this;
   }
 };
 
@@ -60,7 +69,7 @@ class DoubleAST : public ExpressionAST {
   DoubleAST(std::string* value) : value_(std::stod(*value)) {}
   virtual ~DoubleAST() {}
 
-  virtual double eval(Context* context) const override { return value_; }
+  virtual double Evalutate(Context* context) const override { return value_; }
 };
 
 class BinaryOperationAST : public ExpressionAST {
@@ -74,7 +83,7 @@ class BinaryOperationAST : public ExpressionAST {
       : type_(type), lhs_(lhs), rhs_(rhs) {}
   virtual ~BinaryOperationAST() {}
 
-  virtual double eval(Context* context) const override;
+  virtual double Evalutate(Context* context) const override;
 };
 
 class IdentifierAST : public ExpressionAST {
@@ -84,7 +93,7 @@ class IdentifierAST : public ExpressionAST {
   IdentifierAST(std::string* name) : name_(*name) { delete name; }
   virtual ~IdentifierAST() {}
 
-  virtual double eval(Context* context) const override;
+  virtual double Evalutate(Context* context) const override;
 };
 
 class VariableAssignmentAST : public ExpressionAST {
@@ -96,7 +105,7 @@ class VariableAssignmentAST : public ExpressionAST {
       : name_(name), value_(value) {}
   virtual ~VariableAssignmentAST() {}
 
-  virtual double eval(Context* context) const override;
+  virtual double Evalutate(Context* context) const override;
 };
 
 class ExpressionAssignmentAST : public ExpressionAST {
@@ -109,5 +118,5 @@ class ExpressionAssignmentAST : public ExpressionAST {
       : name_(name), value_(value) {}
   virtual ~ExpressionAssignmentAST() {}
 
-  virtual double eval(Context* context) const override;
+  virtual double Evalutate(Context* context) const override;
 };

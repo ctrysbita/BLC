@@ -31,52 +31,59 @@
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
 
-/* Tokens.  */
+/* Undocumented macros, especially those whose name start with YY_,
+   are private implementation details.  Do not rely on them.  */
+
+#ifndef YY_YY_BLC_TAB_HPP_INCLUDED
+# define YY_YY_BLC_TAB_HPP_INCLUDED
+/* Debug traces.  */
+#ifndef YYDEBUG
+# define YYDEBUG 0
+#endif
+#if YYDEBUG
+extern int yydebug;
+#endif
+
+/* Token type.  */
 #ifndef YYTOKENTYPE
 # define YYTOKENTYPE
-   /* Put the tokens into the symbol table, so that GDB and other debuggers
-      know about them.  */
-   enum yytokentype {
-     IDENTIFIER = 258,
-     DOUBLE_NUM = 259,
-     EXPR = 260,
-     NE = 261,
-     EQ = 262,
-     LEE = 263,
-     GE = 264
-   };
+  enum yytokentype
+  {
+    IDENTIFIER = 258,
+    DOUBLE_NUM = 259,
+    EXPR = 260,
+    GE = 261,
+    LE = 262,
+    EQ = 263,
+    NE = 264
+  };
 #endif
-/* Tokens.  */
-#define IDENTIFIER 258
-#define DOUBLE_NUM 259
-#define EXPR 260
-#define NE 261
-#define EQ 262
-#define LEE 263
-#define GE 264
 
-
-
-
+/* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef union YYSTYPE
-#line 13 "blc.y"
+union YYSTYPE
 {
+#line 13 "blc.y"
+
   std::string* value;
 
   ExpressionAST* expression;
   StatementAST* statement;
   IdentifierAST* identifier;
 
-  std::vector<AST*>* statements;
-}
-/* Line 1529 of yacc.c.  */
+  std::list<AST*>* statements;
+
 #line 77 "blc.tab.hpp"
-	YYSTYPE;
-# define yystype YYSTYPE /* obsolescent; will be withdrawn */
-# define YYSTYPE_IS_DECLARED 1
+
+};
+typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
+# define YYSTYPE_IS_DECLARED 1
 #endif
+
 
 extern YYSTYPE yylval;
 
+int yyparse (void);
+
+#endif /* !YY_YY_BLC_TAB_HPP_INCLUDED  */
