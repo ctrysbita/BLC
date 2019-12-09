@@ -52,10 +52,12 @@ extern int yydebug;
     IDENTIFIER = 258,
     DOUBLE_NUM = 259,
     EXPR = 260,
-    GE = 261,
-    LE = 262,
-    EQ = 263,
-    NE = 264
+    IF = 261,
+    WHILE = 262,
+    GE = 263,
+    LE = 264,
+    EQ = 265,
+    NE = 266
   };
 #endif
 
@@ -73,7 +75,7 @@ union YYSTYPE
 
   std::list<AST*>* statements;
 
-#line 77 "blc.tab.hpp"
+#line 79 "blc.tab.hpp"
 
 };
 typedef union YYSTYPE YYSTYPE;

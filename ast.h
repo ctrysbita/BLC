@@ -61,6 +61,28 @@ class BlockAST : public StatementAST {
   }
 };
 
+class IfAST : public StatementAST {
+ private:
+  const ExpressionAST* condition_;
+  const StatementAST* statement_;
+
+ public:
+  IfAST(ExpressionAST* condition, StatementAST* statement)
+      : condition_(condition), statement_(statement) {}
+  ~IfAST() {}
+};
+
+class WhileAST : public StatementAST {
+ private:
+  const ExpressionAST* condition_;
+  const StatementAST* statement_;
+
+ public:
+  WhileAST(ExpressionAST* condition, StatementAST* statement)
+      : condition_(condition), statement_(statement) {}
+  ~WhileAST() {}
+};
+
 class DoubleAST : public ExpressionAST {
  private:
   const double value_;

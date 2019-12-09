@@ -21,7 +21,7 @@ extern AST* ast;
 }
 
 %token <value> IDENTIFIER DOUBLE_NUM
-%token EXPR
+%token EXPR IF WHILE
 %right '='
 %left GE LE EQ NE
 %left '+' '-'
@@ -44,6 +44,8 @@ program statement { ast = $2; OnParsed(); }
 statement:
 ';' { $$ = new StatementAST(); }
 | expression ';' { $<expression>$ = $1; }
+| WHILE '(' expression ')' statement { $$ = new WhileAST($3, $5); }
+| IF '(' expression ')' statement { $$ = new IfAST($3, $5); }
 | '{' statements '}' { $$ = (new BlockAST())->WithChildren($2); }
 ;
 
