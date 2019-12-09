@@ -14,7 +14,7 @@ void yyerror(std::string);
 [0-9]*\.[0-9]+|[0-9]+ { yylval.value = new std::string(yytext); return DOUBLE_NUM; }
 [_a-zA-Z][_a-zA-Z0-9]* { yylval.value = new std::string(yytext); return IDENTIFIER; }
 
-[-()<>=+*/%;] return *yytext;
+[-(){}<>=+*/%;] return *yytext;
 
 [ \t\n]+ ;
 . yyerror("Lexical Error: Unknown character.");

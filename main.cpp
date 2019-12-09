@@ -9,11 +9,9 @@ AST* ast = nullptr;
 auto ctx = new Context();
 void eval(AST* ast) {
   if (!ast) return;
-  try {
-    auto v = dynamic_cast<ExpressionAST*>(ast)->eval(ctx);
-    std::cout << "=> " << v << std::endl;
-  } catch (...) {
-  }
+
+  auto v = dynamic_cast<ExpressionAST*>(ast);
+  if (v) std::cout << "=> " << v->eval(ctx) << std::endl;
   delete ast;
 }
 

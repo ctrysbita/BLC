@@ -73,7 +73,9 @@ union YYSTYPE
   StatementAST* statement;
   IdentifierAST* identifier;
 
-#line 77 "blc.tab.hpp"
+  std::vector<AST*>* statements;
+
+#line 79 "blc.tab.hpp"
 
 };
 typedef union YYSTYPE YYSTYPE;

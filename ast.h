@@ -27,7 +27,7 @@ class ExpressionAST : public AST {
   virtual llvm::Value* GenIR(Context* context) { return nullptr; }
 };
 
-class BlockAST {
+class BlockAST : public StatementAST {
  public:
   union SymbolValueType {
     double value;
