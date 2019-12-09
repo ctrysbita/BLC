@@ -6,7 +6,7 @@
     {
       "label": "BuildDebug",
       "type": "shell",
-      "command": "bash -c 'clang++ -g -std=c++17 `llvm-config --cxxflags --ldflags` `llvm-config --system-libs --libs core` -o main -I. blc.tab.cpp blc.yy.cpp ast.cpp main.cpp'",
+      "command": "bash -c 'clang++ -g -std=c++17 -I. blc.tab.cpp blc.yy.cpp ast.cpp main.cpp `llvm-config --cxxflags --ldflags` `llvm-config --system-libs --libs core` -frtti -fcxx-exceptions -o main'",
       "group": "build",
       "dependsOn": "FlexGenerate"
     },
