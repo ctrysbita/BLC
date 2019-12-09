@@ -11,6 +11,18 @@ double BinaryOperationAST::eval(Context* context) const {
       return lhs_->eval(context) * rhs_->eval(context);
     case '/':
       return lhs_->eval(context) / rhs_->eval(context);
+    case '>':
+      return lhs_->eval(context) > rhs_->eval(context);
+    case '<':
+      return lhs_->eval(context) < rhs_->eval(context);
+    case GE:
+      return lhs_->eval(context) >= rhs_->eval(context);
+    case LEE:
+      return lhs_->eval(context) <= rhs_->eval(context);
+    case EQ:
+      return lhs_->eval(context) == rhs_->eval(context);
+    case NE:
+      return lhs_->eval(context) != rhs_->eval(context);
     default:
       return 0;
   }

@@ -8,4 +8,4 @@ bison:
 	bison -d -o blc.tab.cpp blc.y
 
 all: bison flex
-	clang++ -g -std=c++17 $(CXXFLAGS) $(LIBS) -o o -I. blc.tab.cpp blc.yy.cpp main.cpp
+	clang++ -g -std=c++14 $(CXXFLAGS) $(LIBS) -o o -I. blc.tab.cpp blc.yy.cpp main.cpp ast.cpp

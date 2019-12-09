@@ -23,7 +23,7 @@ extern AST* ast;
 %token <value> IDENTIFIER DOUBLE_NUM
 %token EXPR
 %right '='
-%left GE LE EQ NE GT LT
+%left GE LEE EQ NE
 %left '+' '-'
 %left '*' '/' '%'
 
@@ -62,6 +62,12 @@ DOUBLE_NUM { $$ = new DoubleAST($1); }
 | expression '-' expression { $$ = new BinaryOperationAST('-', $1, $3); }
 | expression '*' expression { $$ = new BinaryOperationAST('*', $1, $3); }
 | expression '/' expression { $$ = new BinaryOperationAST('/', $1, $3); }
+| expression '<' expression         { $$ = new BinaryOperationAST('<', $1, $3); }
+| expression '>' expression         { $$ = new BinaryOperationAST('>', $1, $3); }
+| expression GE expression          { $$ = new BinaryOperationAST(GE, $1, $3); }
+| expression LEE expression          { $$ = new BinaryOperationAST(LEE, $1, $3); }
+| expression NE expression          { $$ = new BinaryOperationAST(NE, $1, $3); }
+| expression EQ expression          { $$ = new BinaryOperationAST(EQ, $1, $3); }
 | '(' expression ')' { $$ = $2; }
 ;
 

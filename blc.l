@@ -17,6 +17,12 @@ void yyerror(std::string);
 [-(){}<>=+*/%;] return *yytext;
 
 [ \t\n]+ ;
+
+">="            return GE;
+"<="            return LEE;
+"=="            return EQ;
+"!="            return NE;
+
 . yyerror("Lexical Error: Unknown character.");
 
 %%
