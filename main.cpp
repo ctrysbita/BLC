@@ -9,8 +9,10 @@ AST* ast = nullptr;
 auto ctx = new Context();
 void OnParsed() {
   if (!ast) return;
-  auto v = dynamic_cast<ExpressionAST*>(ast);
-  if (v) std::cout << "=> " << v->Evalutate(ctx) << std::endl;
+  auto expression = dynamic_cast<ExpressionAST*>(ast);
+  if (expression) std::cout << "=>" << expression->Evalutate(ctx) << std::endl;
+  auto statement = dynamic_cast<StatementAST*>(ast);
+  if (statement) statement->Execute(ctx);
   delete ast;
 }
 

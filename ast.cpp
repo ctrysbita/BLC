@@ -1,5 +1,29 @@
 #include "ast.h"
+#include <iostream>
 #include "blc.tab.hpp"
+
+void BlockAST::Execute(Context* context) {
+  // Inherit symbols from upper block;
+  symbols_.insert(context->blocks_.top()->symbols_.begin(),
+                  context->blocks_.top()->symbols_.end());
+  types_.insert(context->blocks_.top()->types_.begin(),
+                context->blocks_.top()->types_.end());
+
+  // Use current block as context.
+  context->blocks_.push(this);
+
+  // Execute all statements in current block.
+  for (auto ast : children_) {
+    auto expression = dynamic_cast<ExpressionAST*>(ast);
+    if (expression)
+      std::cout << "=>" << expression->Evalutate(context) << std::endl;
+    auto statement = dynamic_cast<StatementAST*>(ast);
+    if (statement) statement->Execute(context);
+  }
+
+  // Back to upper block.
+  context->blocks_.pop();
+}
 
 double BinaryOperationAST::Evalutate(Context* context) const {
   switch (type_) {
@@ -38,7 +62,7 @@ double IdentifierAST::Evalutate(Context* context) const {
 double VariableAssignmentAST::Evalutate(Context* context) const {
   auto value = value_->Evalutate(context);
   context->blocks_.top()->set_symbol(name_->name_, DOUBLE_NUM,
-                                    BlockAST::SymbolValueType{value});
+                                     BlockAST::SymbolValueType{value});
   return value;
 }
 

@@ -16,6 +16,7 @@ class StatementAST : public AST {
   StatementAST() {}
   virtual ~StatementAST() {}
 
+  virtual void Execute(Context* context) {}
   virtual llvm::Value* GenIR(Context* context) { return nullptr; }
 };
 
@@ -59,6 +60,8 @@ class BlockAST : public StatementAST {
     delete asts;
     return this;
   }
+
+  virtual void Execute(Context* context) override;
 };
 
 class IfAST : public StatementAST {
