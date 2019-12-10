@@ -48,7 +48,7 @@ class BlockAST : public StatementAST {
   BlockAST() {}
   virtual ~BlockAST() {}
 
-  inline SymbolType get_symbol(std::string name) { return *(symbols_[name]); }
+  inline SymbolType get_symbol(std::string name) { return *symbols_[name]; }
   inline void set_symbol(std::string name, SymbolType&& value) {
     // TODO: Unsafe.
     if (symbols_.find(name) != symbols_.end())
