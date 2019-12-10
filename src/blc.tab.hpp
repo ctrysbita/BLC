@@ -1,4 +1,4 @@
-/* A Bison parser, made by GNU Bison 3.4.2.  */
+/* A Bison parser, made by GNU Bison 3.4.1.  */
 
 /* Bison interface for Yacc-like parsers in C
 
@@ -54,8 +54,8 @@ extern int yydebug;
     EXPR = 260,
     IF = 261,
     WHILE = 262,
-    GE = 263,
-    LE = 264,
+    GEQ = 263,
+    LEQ = 264,
     EQ = 265,
     NE = 266
   };

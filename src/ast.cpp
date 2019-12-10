@@ -37,9 +37,9 @@ double BinaryOperationAST::Evalutate(Context* context) const {
       return lhs_->Evalutate(context) > rhs_->Evalutate(context);
     case '<':
       return lhs_->Evalutate(context) < rhs_->Evalutate(context);
-    case GE:
+    case GEQ:
       return lhs_->Evalutate(context) >= rhs_->Evalutate(context);
-    case LE:
+    case LEQ:
       return lhs_->Evalutate(context) <= rhs_->Evalutate(context);
     case EQ:
       return lhs_->Evalutate(context) == rhs_->Evalutate(context);

@@ -18,8 +18,8 @@ void yyerror(std::string);
 
 [-(){}<>=+*/%;] return *yytext;
 
-">=" return GE;
-"<=" return LE;
+">=" return GEQ;
+"<=" return LEQ;
 "==" return EQ;
 "!=" return NE;
 
