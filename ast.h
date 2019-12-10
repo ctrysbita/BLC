@@ -66,24 +66,32 @@ class BlockAST : public StatementAST {
 
 class IfAST : public StatementAST {
  private:
-  const ExpressionAST* condition_;
-  const StatementAST* statement_;
+  ExpressionAST* condition_;
+  StatementAST* statement_;
 
  public:
   IfAST(ExpressionAST* condition, StatementAST* statement)
       : condition_(condition), statement_(statement) {}
   ~IfAST() {}
+
+  virtual void Execute(Context* context) override {
+    if (condition_->Evalutate(context)) statement_->Execute(context);
+  }
 };
 
 class WhileAST : public StatementAST {
  private:
-  const ExpressionAST* condition_;
-  const StatementAST* statement_;
+  ExpressionAST* condition_;
+  StatementAST* statement_;
 
  public:
   WhileAST(ExpressionAST* condition, StatementAST* statement)
       : condition_(condition), statement_(statement) {}
   ~WhileAST() {}
+
+  virtual void Execute(Context* context) override {
+    while (condition_->Evalutate(context)) statement_->Execute(context);
+  }
 };
 
 class DoubleAST : public ExpressionAST {
