@@ -1,6 +1,8 @@
 #pragma once
 #include <llvm/IR/Value.h>
 #include <list>
+#include <memory>
+#include <variant>
 #include "context.hpp"
 
 class AST {
@@ -31,14 +33,10 @@ class ExpressionAST : public AST {
 
 class BlockAST : public StatementAST {
  public:
-  union SymbolValueType {
-    double value;
-    const ExpressionAST* expression;
-  };
+  typedef std::variant<double, const ExpressionAST*> SymbolType;
 
  private:
-  std::map<std::string, SymbolValueType> symbols_;
-  std::map<std::string, int> types_;
+  std::map<std::string, SymbolType> symbols_;
 
   std::list<AST*> children_;
 
@@ -46,13 +44,10 @@ class BlockAST : public StatementAST {
   BlockAST() {}
   virtual ~BlockAST() {}
 
-  inline const SymbolValueType get_symbol(std::string name) {
-    return symbols_[name];
-  }
-  inline int get_type(std::string name) { return types_[name]; }
-  inline void set_symbol(std::string name, int type, SymbolValueType value) {
-    types_[name] = type;
+  inline SymbolType get_symbol(std::string name) { return symbols_[name]; }
+  inline void set_symbol(std::string name, SymbolType&& value) {
     symbols_[name] = value;
+    // std::unique_ptr<SymbolValueType>(new SymbolValueType(value));
   }
 
   BlockAST* WithChildren(std::list<AST*>* asts) {

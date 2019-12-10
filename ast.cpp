@@ -6,8 +6,6 @@ void BlockAST::Execute(Context* context) {
   // Inherit symbols from upper block;
   symbols_.insert(context->blocks_.top()->symbols_.begin(),
                   context->blocks_.top()->symbols_.end());
-  types_.insert(context->blocks_.top()->types_.begin(),
-                context->blocks_.top()->types_.end());
 
   // Use current block as context.
   context->blocks_.push(this);
@@ -54,20 +52,21 @@ double BinaryOperationAST::Evalutate(Context* context) const {
 
 double IdentifierAST::Evalutate(Context* context) const {
   auto symbol = context->blocks_.top()->get_symbol(name_);
-  auto type = context->blocks_.top()->get_type(name_);
-  if (type == EXPR) return symbol.expression->Evalutate(context);
-  return symbol.value;
+  try {
+    return std::get<double>(symbol);
+  } catch (...) {
+    return std::get<const ExpressionAST*>(symbol)->Evalutate(context);
+  }
 }
 
 double VariableAssignmentAST::Evalutate(Context* context) const {
   auto value = value_->Evalutate(context);
-  context->blocks_.top()->set_symbol(name_->name_, DOUBLE_NUM,
-                                     BlockAST::SymbolValueType{value});
+  context->blocks_.top()->set_symbol(name_->name_, BlockAST::SymbolType(value));
   return value;
 }
 
 double ExpressionAssignmentAST::Evalutate(Context* context) const {
-  context->blocks_.top()->set_symbol(
-      name_->name_, EXPR, BlockAST::SymbolValueType{.expression = value_});
+  context->blocks_.top()->set_symbol(name_->name_,
+                                     BlockAST::SymbolType(value_));
   return value_->Evalutate(context);
 }

@@ -56,6 +56,9 @@
         "map": "cpp",
         "ratio": "cpp",
         "mutex": "cpp",
-        "thread": "cpp"
+        "thread": "cpp",
+        "list": "cpp",
+        "set": "cpp",
+        "variant": "cpp"
     }
 }
