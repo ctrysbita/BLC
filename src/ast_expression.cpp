@@ -6,7 +6,7 @@ double DoubleAST::Evalutate(Context* context) { return value_; }
 
 nlohmann::json DoubleAST::JsonTree(Context* context) {
   nlohmann::json json;
-  json["type"] = "DoubleAST";
+  json["type"] = "Double";
   json["value"] = value_;
   return json;
 }
@@ -40,7 +40,7 @@ double BinaryOperationAST::Evalutate(Context* context) {
 
 nlohmann::json BinaryOperationAST::JsonTree(Context* context) {
   nlohmann::json json;
-  json["type"] = "BinaryOperationAST";
+  json["type"] = "BinaryOperation";
   json["lhs"] = lhs_->JsonTree(context);
   json["rhs"] = rhs_->JsonTree(context);
   switch (type_) {
@@ -71,14 +71,38 @@ double IdentifierAST::Evalutate(Context* context) {
   }
 }
 
+nlohmann::json IdentifierAST::JsonTree(Context* context) {
+  nlohmann::json json;
+  json["type"] = "Identifier";
+  json["name"] = name_;
+  return json;
+}
+
 double VariableAssignmentAST::Evalutate(Context* context) {
   auto value = value_->Evalutate(context);
-  context->blocks_.top()->set_symbol(name_->name_, BlockAST::SymbolType(value));
+  context->blocks_.top()->set_symbol(name_->get_name(),
+                                     BlockAST::SymbolType(value));
   return value;
 }
 
+nlohmann::json VariableAssignmentAST::JsonTree(Context* context) {
+  nlohmann::json json;
+  json["type"] = "VariableAssignment";
+  json["identifier"] = name_->JsonTree(context);
+  json["value"] = value_->JsonTree(context);
+  return json;
+}
+
 double ExpressionAssignmentAST::Evalutate(Context* context) {
-  context->blocks_.top()->set_symbol(name_->name_,
+  context->blocks_.top()->set_symbol(name_->get_name(),
                                      BlockAST::SymbolType(value_));
   return value_->Evalutate(context);
+}
+
+nlohmann::json ExpressionAssignmentAST::JsonTree(Context* context) {
+  nlohmann::json json;
+  json["type"] = "ExpressionAssignment";
+  json["identifier"] = name_->JsonTree(context);
+  json["value"] = value_->JsonTree(context);
+  return json;
 }

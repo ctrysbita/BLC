@@ -75,7 +75,7 @@ class ExpressionAST : public AST {
    */
   virtual double Evalutate(Context* context) = 0;
 
-  virtual nlohmann::json JsonTree(Context* context) { return {}; };
+  virtual nlohmann::json JsonTree(Context* context) = 0;
   virtual llvm::Value* GenIR(Context* context) { return nullptr; }
 };
 
@@ -179,28 +179,45 @@ class BinaryOperationAST : public ExpressionAST {
   virtual nlohmann::json JsonTree(Context* context) override;
 };
 
+/**
+ * @brief AST that represent an identifier.
+ */
 class IdentifierAST : public ExpressionAST {
- public:
+ private:
   std::string name_;
 
+ public:
   IdentifierAST(std::string* name) : name_(*name) { delete name; }
   virtual ~IdentifierAST() {}
 
+  inline const std::string& get_name() { return name_; }
+
   virtual double Evalutate(Context* context) override;
+  virtual nlohmann::json JsonTree(Context* context) override;
 };
 
+/**
+ * @brief AST that represent an variable assignment.
+ * Assign a direct value or evaluated value to identifier.
+ */
 class VariableAssignmentAST : public ExpressionAST {
- public:
+ private:
   IdentifierAST* name_;
   ExpressionAST* value_;
 
+ public:
   VariableAssignmentAST(IdentifierAST* name, ExpressionAST* value)
       : name_(name), value_(value) {}
   virtual ~VariableAssignmentAST() {}
 
   virtual double Evalutate(Context* context) override;
+  virtual nlohmann::json JsonTree(Context* context) override;
 };
 
+/**
+ * @brief AST that represent an expression assignment.
+ * Assign a expression to identifier. The expression will be evaluated when use.
+ */
 class ExpressionAssignmentAST : public ExpressionAST {
  private:
   IdentifierAST* name_;
@@ -212,4 +229,5 @@ class ExpressionAssignmentAST : public ExpressionAST {
   virtual ~ExpressionAssignmentAST() {}
 
   virtual double Evalutate(Context* context) override;
+  virtual nlohmann::json JsonTree(Context* context) override;
 };
