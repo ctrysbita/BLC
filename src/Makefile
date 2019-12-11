@@ -11,7 +11,7 @@ all: bison flex $(objects)
 	$(CXX) $(objects) $(LLVM_FLAGS) $(LLVM_LIBS) -o main
 
 %.o: %.cpp
-	$(CXX) -g $(LLVM_FLAGS) $(LLVM_LIBS) -I. -frtti -fexceptions -std=c++17 -c $< -o $@
+	$(CXX) -g $(LLVM_FLAGS) $(LLVM_LIBS) -I. -I../third_party -frtti -fexceptions -std=c++17 -c $< -o $@
 
 flex:
 	flex -o blc.yy.cpp blc.l

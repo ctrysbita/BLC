@@ -1,5 +1,6 @@
 #pragma once
 #include <llvm/IR/Value.h>
+#include <nlohmann/json.hpp>
 
 #include <list>
 #include <map>
@@ -9,35 +10,83 @@
 
 #include "context.hpp"
 
+/**
+ * @brief The base class for Abstract Syntax Tree.
+ */
 class AST {
  public:
   AST() {}
   virtual ~AST() {}
 
+  /**
+   * @brief Generate JSON format syntax tree.
+   *
+   * @param context Context that store associated information.
+   * @return nlohmann::json JSON object of current AST.
+   */
+  virtual nlohmann::json JsonTree(Context* context) = 0;
+
+  /**
+   * @brief Generate LLVM IR for current AST.
+   *
+   * @param context Context that store associated information.
+   * @return llvm::Value*
+   */
   virtual llvm::Value* GenIR(Context* context) = 0;
 };
 
+/**
+ * @brief The base class for all statement ASTs.
+ * Statement can always be executed and normally doesn't have an exact return
+ * value.
+ */
 class StatementAST : public AST {
  public:
   StatementAST() {}
   virtual ~StatementAST() {}
 
+  /**
+   * @brief Execute current statement.
+   * The method is not virtual because ';' is an empty statement that do
+   * nothing.
+   *
+   * @param context Context that store associated information.
+   */
   virtual void Execute(Context* context) {}
+
+  virtual nlohmann::json JsonTree(Context* context) { return {}; };
   virtual llvm::Value* GenIR(Context* context) { return nullptr; }
 };
 
+/**
+ * @brief The base class for all expression ASTs.
+ * Expression can always be evaluated and has an exact return value.
+ */
 class ExpressionAST : public AST {
  public:
   ExpressionAST() {}
   virtual ~ExpressionAST() {}
 
-  virtual double Evalutate(Context* context) const = 0;
+  /**
+   * @brief Evaluate current expression.
+   *
+   * @param context Context that store associated information.
+   * @return double The return value after evaluate.
+   */
+  virtual double Evalutate(Context* context) = 0;
+
+  virtual nlohmann::json JsonTree(Context* context) { return {}; };
   virtual llvm::Value* GenIR(Context* context) { return nullptr; }
 };
 
+/**
+ * @brief AST that represent a code block.
+ * A code block has an isolated symbol table and the table may inherit from
+ * parent block.
+ */
 class BlockAST : public StatementAST {
  public:
-  typedef std::variant<double, const ExpressionAST*> SymbolType;
+  typedef std::variant<double, ExpressionAST*> SymbolType;
 
  private:
   std::map<std::string, SymbolType*> symbols_;
@@ -96,62 +145,71 @@ class WhileAST : public StatementAST {
   }
 };
 
+/**
+ * @brief AST that represent single double value, which is the only value type
+ * in blc.
+ */
 class DoubleAST : public ExpressionAST {
  private:
-  const double value_;
+  double value_;
 
  public:
   DoubleAST(std::string* value) : value_(std::stod(*value)) {}
   virtual ~DoubleAST() {}
 
-  virtual double Evalutate(Context* context) const override { return value_; }
+  virtual double Evalutate(Context* context) override;
+  virtual nlohmann::json JsonTree(Context* context) override;
 };
 
+/**
+ * @brief AST that represent a binary operation. (like '+' '-' '*' '/')
+ */
 class BinaryOperationAST : public ExpressionAST {
  private:
-  const int type_;
-  const ExpressionAST* lhs_;
-  const ExpressionAST* rhs_;
+  int type_;
+  ExpressionAST* lhs_;
+  ExpressionAST* rhs_;
 
  public:
   BinaryOperationAST(int type, ExpressionAST* lhs, ExpressionAST* rhs)
       : type_(type), lhs_(lhs), rhs_(rhs) {}
   virtual ~BinaryOperationAST() {}
 
-  virtual double Evalutate(Context* context) const override;
+  virtual double Evalutate(Context* context) override;
+  virtual nlohmann::json JsonTree(Context* context) override;
 };
 
 class IdentifierAST : public ExpressionAST {
  public:
-  const std::string name_;
+  std::string name_;
 
   IdentifierAST(std::string* name) : name_(*name) { delete name; }
   virtual ~IdentifierAST() {}
 
-  virtual double Evalutate(Context* context) const override;
+  virtual double Evalutate(Context* context) override;
 };
 
 class VariableAssignmentAST : public ExpressionAST {
  public:
-  const IdentifierAST* name_;
-  const ExpressionAST* value_;
+  IdentifierAST* name_;
+  ExpressionAST* value_;
 
   VariableAssignmentAST(IdentifierAST* name, ExpressionAST* value)
       : name_(name), value_(value) {}
   virtual ~VariableAssignmentAST() {}
 
-  virtual double Evalutate(Context* context) const override;
+  virtual double Evalutate(Context* context) override;
 };
 
 class ExpressionAssignmentAST : public ExpressionAST {
  private:
-  const IdentifierAST* name_;
-  const ExpressionAST* value_;
+  IdentifierAST* name_;
+  ExpressionAST* value_;
 
  public:
   ExpressionAssignmentAST(IdentifierAST* name, ExpressionAST* value)
       : name_(name), value_(value) {}
   virtual ~ExpressionAssignmentAST() {}
 
-  virtual double Evalutate(Context* context) const override;
+  virtual double Evalutate(Context* context) override;
 };
