@@ -1,11 +1,23 @@
-CXXFLAGS = `llvm-config --cxxflags --ldflags`
-LIBS = `llvm-config --system-libs --libs core`
+CXX = g++
+LLVM_FLAGS = `llvm-config --cxxflags --ldflags`
+LLVM_LIBS = `llvm-config --system-libs --libs core`
 
-all: bison flex
-	clang++ -g -std=c++14 -I. blc.tab.cpp blc.yy.cpp ast.cpp main.cpp `llvm-config --cxxflags --ldflags` `llvm-config --system-libs --libs core` -frtti -fcxx-exceptions -o main
+objects := $(patsubst %.cpp,%.o,$(wildcard *.cpp))
+
+ng: $(objects)
+	$(CXX) $(objects) $(LLVM_FLAGS) $(LLVM_LIBS) -o main
+
+all: bison flex $(objects)
+	$(CXX) $(objects) $(LLVM_FLAGS) $(LLVM_LIBS) -o main
+
+%.o: %.cpp
+	$(CXX) -g $(LLVM_FLAGS) $(LLVM_LIBS) -I. -frtti -fexceptions -std=c++17 -c $< -o $@
 
 flex:
 	flex -o blc.yy.cpp blc.l
 
 bison:
 	bison -d -o blc.tab.cpp blc.y
+
+clean:
+	rm *.o

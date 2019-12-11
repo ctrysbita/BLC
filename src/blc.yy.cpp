@@ -1,6 +1,6 @@
-#line 1 "blc.yy.cpp"
+#line 2 "blc.yy.cpp"
 
-#line 3 "blc.yy.cpp"
+#line 4 "blc.yy.cpp"
 
 #define  YY_INT_ALIGNED short int
 
@@ -467,8 +467,8 @@ char *yytext;
 #include "blc.tab.hpp"
 
 void yyerror(std::string);
-#line 470 "blc.yy.cpp"
 #line 471 "blc.yy.cpp"
+#line 472 "blc.yy.cpp"
 
 #define INITIAL 0
 
@@ -688,7 +688,7 @@ YY_DECL
 #line 10 "blc.l"
 
 
-#line 691 "blc.yy.cpp"
+#line 692 "blc.yy.cpp"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -778,12 +778,12 @@ return *yytext;
 case 7:
 YY_RULE_SETUP
 #line 21 "blc.l"
-return GE;
+return GEQ;
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
 #line 22 "blc.l"
-return LE;
+return LEQ;
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
@@ -811,7 +811,7 @@ YY_RULE_SETUP
 #line 29 "blc.l"
 ECHO;
 	YY_BREAK
-#line 814 "blc.yy.cpp"
+#line 815 "blc.yy.cpp"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 

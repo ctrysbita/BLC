@@ -6,22 +6,9 @@
     {
       "label": "BuildDebug",
       "type": "shell",
-      "command": "cd src ; bash -c 'g++ -g blc.tab.cpp blc.yy.cpp ast.cpp main.cpp `llvm-config --cxxflags --ldflags` `llvm-config --system-libs --libs core` -I. -frtti -fexceptions -std=c++17 -o main'",
+      "command": "cd src; make",
       "group": "build",
       "dependsOn": "FlexGenerate"
-    },
-    {
-      "label": "FlexGenerate",
-      "type": "shell",
-      "command": "cd src ; flex -o blc.yy.cpp blc.l",
-      "group": "build",
-      "dependsOn": "BisonGenerate"
-    },
-    {
-      "label": "BisonGenerate",
-      "type": "shell",
-      "command": "cd src ; bison -d -o blc.tab.cpp blc.y",
-      "group": "build"
     }
   ]
 }
