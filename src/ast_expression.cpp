@@ -4,9 +4,9 @@
 
 double DoubleAST::Evalutate(Context* context) { return value_; }
 
-nlohmann::json DoubleAST::JsonTree(Context* context) {
+nlohmann::json DoubleAST::JsonTree() {
   nlohmann::json json;
-  json["type"] = "Double";
+  json["type"] = "double";
   json["value"] = value_;
   return json;
 }
@@ -38,11 +38,11 @@ double BinaryOperationAST::Evalutate(Context* context) {
   }
 }
 
-nlohmann::json BinaryOperationAST::JsonTree(Context* context) {
+nlohmann::json BinaryOperationAST::JsonTree() {
   nlohmann::json json;
   json["type"] = "BinaryOperation";
-  json["lhs"] = lhs_->JsonTree(context);
-  json["rhs"] = rhs_->JsonTree(context);
+  json["lhs"] = lhs_->JsonTree();
+  json["rhs"] = rhs_->JsonTree();
   switch (type_) {
     case GEQ:
       json["operationType"] = ">=";
@@ -71,7 +71,7 @@ double IdentifierAST::Evalutate(Context* context) {
   }
 }
 
-nlohmann::json IdentifierAST::JsonTree(Context* context) {
+nlohmann::json IdentifierAST::JsonTree() {
   nlohmann::json json;
   json["type"] = "Identifier";
   json["name"] = name_;
@@ -85,11 +85,11 @@ double VariableAssignmentAST::Evalutate(Context* context) {
   return value;
 }
 
-nlohmann::json VariableAssignmentAST::JsonTree(Context* context) {
+nlohmann::json VariableAssignmentAST::JsonTree() {
   nlohmann::json json;
   json["type"] = "VariableAssignment";
-  json["identifier"] = name_->JsonTree(context);
-  json["value"] = value_->JsonTree(context);
+  json["identifier"] = name_->JsonTree();
+  json["value"] = value_->JsonTree();
   return json;
 }
 
@@ -99,10 +99,10 @@ double ExpressionAssignmentAST::Evalutate(Context* context) {
   return value_->Evalutate(context);
 }
 
-nlohmann::json ExpressionAssignmentAST::JsonTree(Context* context) {
+nlohmann::json ExpressionAssignmentAST::JsonTree() {
   nlohmann::json json;
   json["type"] = "ExpressionAssignment";
-  json["identifier"] = name_->JsonTree(context);
-  json["value"] = value_->JsonTree(context);
+  json["identifier"] = name_->JsonTree();
+  json["value"] = value_->JsonTree();
   return json;
 }

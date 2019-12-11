@@ -21,10 +21,9 @@ class AST {
   /**
    * @brief Generate JSON format syntax tree.
    *
-   * @param context Context that store associated information.
    * @return nlohmann::json JSON object of current AST.
    */
-  virtual nlohmann::json JsonTree(Context* context) = 0;
+  virtual nlohmann::json JsonTree() = 0;
 
   /**
    * @brief Generate LLVM IR for current AST.
@@ -54,7 +53,7 @@ class StatementAST : public AST {
    */
   virtual void Execute(Context* context) {}
 
-  virtual nlohmann::json JsonTree(Context* context) { return {}; };
+  virtual nlohmann::json JsonTree() override { return {}; };
   virtual llvm::Value* GenIR(Context* context) { return nullptr; }
 };
 
@@ -75,7 +74,7 @@ class ExpressionAST : public AST {
    */
   virtual double Evalutate(Context* context) = 0;
 
-  virtual nlohmann::json JsonTree(Context* context) = 0;
+  virtual nlohmann::json JsonTree() = 0;
   virtual llvm::Value* GenIR(Context* context) { return nullptr; }
 };
 
@@ -86,11 +85,22 @@ class ExpressionAST : public AST {
  */
 class BlockAST : public StatementAST {
  public:
+  /**
+   * @brief The type that can be bind to an identifier.
+   * - double
+   * - ExpressionAST*
+   */
   typedef std::variant<double, ExpressionAST*> SymbolType;
 
  private:
+  /**
+   * @brief Symbol table for current code block.
+   */
   std::map<std::string, SymbolType*> symbols_;
 
+  /**
+   * @brief Statements and expressions in current code block.
+   */
   std::list<AST*> children_;
 
  public:
@@ -106,13 +116,16 @@ class BlockAST : public StatementAST {
       symbols_.insert({name, new SymbolType(value)});
   }
 
-  BlockAST* WithChildren(std::list<AST*>* asts) {
-    children_.splice(children_.end(), *asts);
-    delete asts;
-    return this;
-  }
+  /**
+   * @brief To add other statements and expressions to children.
+   *
+   * @param asts List of statements and expressions to add.
+   * @return BlockAST* Self.
+   */
+  BlockAST* WithChildren(std::list<AST*>* asts);
 
   virtual void Execute(Context* context) override;
+  virtual nlohmann::json JsonTree() override;
 };
 
 class IfAST : public StatementAST {
@@ -123,11 +136,15 @@ class IfAST : public StatementAST {
  public:
   IfAST(ExpressionAST* condition, StatementAST* statement)
       : condition_(condition), statement_(statement) {}
-  ~IfAST() {}
+  virtual ~IfAST() {
+    delete condition_;
+    delete statement_;
+  }
 
   virtual void Execute(Context* context) override {
     if (condition_->Evalutate(context)) statement_->Execute(context);
   }
+  virtual nlohmann::json JsonTree() override;
 };
 
 class WhileAST : public StatementAST {
@@ -138,11 +155,15 @@ class WhileAST : public StatementAST {
  public:
   WhileAST(ExpressionAST* condition, StatementAST* statement)
       : condition_(condition), statement_(statement) {}
-  ~WhileAST() {}
+  virtual ~WhileAST() {
+    delete condition_;
+    delete statement_;
+  }
 
   virtual void Execute(Context* context) override {
     while (condition_->Evalutate(context)) statement_->Execute(context);
   }
+  virtual nlohmann::json JsonTree() override;
 };
 
 /**
@@ -158,7 +179,7 @@ class DoubleAST : public ExpressionAST {
   virtual ~DoubleAST() {}
 
   virtual double Evalutate(Context* context) override;
-  virtual nlohmann::json JsonTree(Context* context) override;
+  virtual nlohmann::json JsonTree() override;
 };
 
 /**
@@ -173,10 +194,13 @@ class BinaryOperationAST : public ExpressionAST {
  public:
   BinaryOperationAST(int type, ExpressionAST* lhs, ExpressionAST* rhs)
       : type_(type), lhs_(lhs), rhs_(rhs) {}
-  virtual ~BinaryOperationAST() {}
+  virtual ~BinaryOperationAST() {
+    delete lhs_;
+    delete rhs_;
+  }
 
   virtual double Evalutate(Context* context) override;
-  virtual nlohmann::json JsonTree(Context* context) override;
+  virtual nlohmann::json JsonTree() override;
 };
 
 /**
@@ -193,7 +217,7 @@ class IdentifierAST : public ExpressionAST {
   inline const std::string& get_name() { return name_; }
 
   virtual double Evalutate(Context* context) override;
-  virtual nlohmann::json JsonTree(Context* context) override;
+  virtual nlohmann::json JsonTree() override;
 };
 
 /**
@@ -208,10 +232,13 @@ class VariableAssignmentAST : public ExpressionAST {
  public:
   VariableAssignmentAST(IdentifierAST* name, ExpressionAST* value)
       : name_(name), value_(value) {}
-  virtual ~VariableAssignmentAST() {}
+  virtual ~VariableAssignmentAST() {
+    delete name_;
+    delete value_;
+  }
 
   virtual double Evalutate(Context* context) override;
-  virtual nlohmann::json JsonTree(Context* context) override;
+  virtual nlohmann::json JsonTree() override;
 };
 
 /**
@@ -226,8 +253,11 @@ class ExpressionAssignmentAST : public ExpressionAST {
  public:
   ExpressionAssignmentAST(IdentifierAST* name, ExpressionAST* value)
       : name_(name), value_(value) {}
-  virtual ~ExpressionAssignmentAST() {}
+  virtual ~ExpressionAssignmentAST() {
+    delete name_;
+    // TODO: Unsafe. Handle value deletion.
+  }
 
   virtual double Evalutate(Context* context) override;
-  virtual nlohmann::json JsonTree(Context* context) override;
+  virtual nlohmann::json JsonTree() override;
 };
