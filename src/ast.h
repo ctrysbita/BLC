@@ -98,6 +98,9 @@ class BlockAST : public StatementAST {
    */
   std::map<std::string, SymbolType> symbols_;
 
+  /**
+   * @brief LLVM symbol table for current code block.
+   */
   std::map<std::string, llvm::Value*> llvm_symbols_;
 
   /**
@@ -109,6 +112,12 @@ class BlockAST : public StatementAST {
   BlockAST() {}
   virtual ~BlockAST() {}
 
+  /**
+   * @brief Get symbol from table if defined.
+   *
+   * @param name Symbol name.
+   * @return std::optional<SymbolType> Symbol value.
+   */
   inline std::optional<SymbolType> get_symbol(std::string name) {
     if (symbols_.find(name) != symbols_.end()) return symbols_[name];
     return {};

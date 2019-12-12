@@ -133,6 +133,17 @@ nlohmann::json IdentifierAST::JsonTree() {
 
 double VariableAssignmentAST::Evaluate(Context* context) {
   auto value = value_->Evaluate(context);
+
+  // If symbol defined in prarent blocks, set directly.
+  for (auto it = context->blocks_.rbegin(); it != context->blocks_.rend();
+       ++it) {
+    auto symbol = (*it)->get_symbol(name_->get_name());
+    if (!symbol.has_value()) continue;
+    (*it)->set_symbol(name_->get_name(), BlockAST::SymbolType(value));
+    return value;
+  }
+
+  // Create symbol at current block if not found in parent.
   context->blocks_.back()->set_symbol(name_->get_name(),
                                       BlockAST::SymbolType(value));
   return value;
@@ -155,6 +166,16 @@ Value* VariableAssignmentAST::GenIR(Context* context) {
 }
 
 double ExpressionAssignmentAST::Evaluate(Context* context) {
+  // If symbol defined in prarent blocks, set directly.
+  for (auto it = context->blocks_.rbegin(); it != context->blocks_.rend();
+       ++it) {
+    auto symbol = (*it)->get_symbol(name_->get_name());
+    if (!symbol.has_value()) continue;
+    (*it)->set_symbol(name_->get_name(), BlockAST::SymbolType(value_));
+    return value_->Evaluate(context);
+  }
+
+  // Create symbol at current block if not found in parent.
   context->blocks_.back()->set_symbol(name_->get_name(),
                                       BlockAST::SymbolType(value_));
   return value_->Evaluate(context);
