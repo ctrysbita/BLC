@@ -86,4 +86,53 @@ brew install llvm
 Since the installation process involves the compilation of LLVM source code, it may take a long time. After installation is finished, LLVM is now installed at /usr/local/Cellar/llvm. Since llvm-config utility is needed when compiling our program, you may want to add `/usr/local/Cellar/llvm/9.0.0_1/bin` to the PATH variable as well (the path may vary). 
 
 
-###
+## Code Explanation
+
+### Abstract syntax tree
+
+To represent the syntax tree,  a set of classes are created. The first class created is `AST`, the body of this class is as follows, 
+
+```c++
+class AST {
+ public:
+  AST() {}
+  virtual ~AST() {}
+  virtual nlohmann::json JsonTree() = 0;
+  virtual llvm::Value* GenIR(Context* context) = 0;
+};
+```
+
+This class is the parent of all kinds of tree nodes used in our program. It is an abstract class with two pure virtual methods, which are `JsonTree` and `GenIR` respectively. These two methods are two tree traverses, namely the syntax tree printer and compiler. JsonTree is used to generate Json output for the constructed syntax tree, and GenIR is used to generate LLVM Intermediate Representation for the constructed syntax tree. 
+
+There are two types of tree nodes in the program, which are called statement nodes and expression nodes. Statement nodes are inherited from `StatementAST`, whose body is as follows. 
+
+```c++
+class StatementAST : public AST {
+ public:
+  StatementAST() {}
+  virtual ~StatementAST() {}
+  virtual void Execute(Context* context) {}
+  virtual nlohmann::json JsonTree() override;
+  virtual llvm::Value* GenIR(Context* context) override;
+};
+```
+
+It overrides the two tree-traverser methods and has a new `Execute` method. Execute acts as interpreter, which is the third tree traverser. It takes the current context, which will be explained later, and perform certain instructions depending on the statement type. 
+
+The other type of tree nodes is expression node. Expression nodes are inherited from `ExpressionAST`, whose body is as follows. 
+
+```c++
+class ExpressionAST : public AST {
+ public:
+  ExpressionAST() {}
+  virtual ~ExpressionAST() {}
+  virtual double Evaluate(Context* context) = 0;
+  virtual nlohmann::json JsonTree() = 0;
+  virtual llvm::Value* GenIR(Context* context) = 0;
+};
+```
+
+Like `StatementAST`, it overrides the `JsonTree` and `GenIR` methods, but defines them as pure virtual methods. Since the expression must have a type, `ExpressionAST` is defined as an abstract class and is not instantiable. However, the `StatementAST` can be instantiated, becouse the program allows empty statement inputs. The major difference between expression nodes and statement nodes is that expression nodes can be evaluatd and a double type result will be returned, while statement nodes can be executed but no value will be returned. 
+
+Expression nodes can have the type of  `DoubleAST`, `BinaryOperationAST`, `IdentifierAST`, `VariableAssignmentAST` or `ExpressionAssignmentAST`. This report will explain all these classes in order. 
+
