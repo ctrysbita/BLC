@@ -2,7 +2,7 @@
 #include "ast.h"
 #include "blc.tab.hpp"
 
-double DoubleAST::Evalutate(Context* context) { return value_; }
+double DoubleAST::Evaluate(Context* context) { return value_; }
 
 nlohmann::json DoubleAST::JsonTree() {
   nlohmann::json json;
@@ -11,28 +11,28 @@ nlohmann::json DoubleAST::JsonTree() {
   return json;
 }
 
-double BinaryOperationAST::Evalutate(Context* context) {
+double BinaryOperationAST::Evaluate(Context* context) {
   switch (type_) {
     case '+':
-      return lhs_->Evalutate(context) + rhs_->Evalutate(context);
+      return lhs_->Evaluate(context) + rhs_->Evaluate(context);
     case '-':
-      return lhs_->Evalutate(context) - rhs_->Evalutate(context);
+      return lhs_->Evaluate(context) - rhs_->Evaluate(context);
     case '*':
-      return lhs_->Evalutate(context) * rhs_->Evalutate(context);
+      return lhs_->Evaluate(context) * rhs_->Evaluate(context);
     case '/':
-      return lhs_->Evalutate(context) / rhs_->Evalutate(context);
+      return lhs_->Evaluate(context) / rhs_->Evaluate(context);
     case '>':
-      return lhs_->Evalutate(context) > rhs_->Evalutate(context);
+      return lhs_->Evaluate(context) > rhs_->Evaluate(context);
     case '<':
-      return lhs_->Evalutate(context) < rhs_->Evalutate(context);
+      return lhs_->Evaluate(context) < rhs_->Evaluate(context);
     case GEQ:
-      return lhs_->Evalutate(context) >= rhs_->Evalutate(context);
+      return lhs_->Evaluate(context) >= rhs_->Evaluate(context);
     case LEQ:
-      return lhs_->Evalutate(context) <= rhs_->Evalutate(context);
+      return lhs_->Evaluate(context) <= rhs_->Evaluate(context);
     case EQ:
-      return lhs_->Evalutate(context) == rhs_->Evalutate(context);
+      return lhs_->Evaluate(context) == rhs_->Evaluate(context);
     case NE:
-      return lhs_->Evalutate(context) != rhs_->Evalutate(context);
+      return lhs_->Evaluate(context) != rhs_->Evaluate(context);
     default:
       return 0;
   }
@@ -62,12 +62,12 @@ nlohmann::json BinaryOperationAST::JsonTree() {
   return json;
 }
 
-double IdentifierAST::Evalutate(Context* context) {
+double IdentifierAST::Evaluate(Context* context) {
   auto symbol = context->blocks_.top()->get_symbol(name_);
   try {
     return std::get<double>(symbol);
   } catch (...) {
-    return std::get<ExpressionAST*>(symbol)->Evalutate(context);
+    return std::get<ExpressionAST*>(symbol)->Evaluate(context);
   }
 }
 
@@ -78,8 +78,8 @@ nlohmann::json IdentifierAST::JsonTree() {
   return json;
 }
 
-double VariableAssignmentAST::Evalutate(Context* context) {
-  auto value = value_->Evalutate(context);
+double VariableAssignmentAST::Evaluate(Context* context) {
+  auto value = value_->Evaluate(context);
   context->blocks_.top()->set_symbol(name_->get_name(),
                                      BlockAST::SymbolType(value));
   return value;
@@ -93,10 +93,10 @@ nlohmann::json VariableAssignmentAST::JsonTree() {
   return json;
 }
 
-double ExpressionAssignmentAST::Evalutate(Context* context) {
+double ExpressionAssignmentAST::Evaluate(Context* context) {
   context->blocks_.top()->set_symbol(name_->get_name(),
                                      BlockAST::SymbolType(value_));
-  return value_->Evalutate(context);
+  return value_->Evaluate(context);
 }
 
 nlohmann::json ExpressionAssignmentAST::JsonTree() {

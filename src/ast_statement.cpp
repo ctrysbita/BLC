@@ -20,7 +20,7 @@ void BlockAST::Execute(Context* context) {
   for (auto ast : children_) {
     auto expression = dynamic_cast<ExpressionAST*>(ast);
     if (expression)
-      std::cout << "=> " << expression->Evalutate(context) << std::endl;
+      std::cout << "=> " << expression->Evaluate(context) << std::endl;
     auto statement = dynamic_cast<StatementAST*>(ast);
     if (statement) statement->Execute(context);
   }

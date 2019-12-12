@@ -72,7 +72,7 @@ class ExpressionAST : public AST {
    * @param context Context that store associated information.
    * @return double The return value after evaluate.
    */
-  virtual double Evalutate(Context* context) = 0;
+  virtual double Evaluate(Context* context) = 0;
 
   virtual nlohmann::json JsonTree() = 0;
   virtual llvm::Value* GenIR(Context* context) { return nullptr; }
@@ -142,7 +142,7 @@ class IfAST : public StatementAST {
   }
 
   virtual void Execute(Context* context) override {
-    if (condition_->Evalutate(context)) statement_->Execute(context);
+    if (condition_->Evaluate(context)) statement_->Execute(context);
   }
   virtual nlohmann::json JsonTree() override;
 };
@@ -161,7 +161,7 @@ class WhileAST : public StatementAST {
   }
 
   virtual void Execute(Context* context) override {
-    while (condition_->Evalutate(context)) statement_->Execute(context);
+    while (condition_->Evaluate(context)) statement_->Execute(context);
   }
   virtual nlohmann::json JsonTree() override;
 };
@@ -178,7 +178,7 @@ class DoubleAST : public ExpressionAST {
   DoubleAST(std::string* value) : value_(std::stod(*value)) {}
   virtual ~DoubleAST() {}
 
-  virtual double Evalutate(Context* context) override;
+  virtual double Evaluate(Context* context) override;
   virtual nlohmann::json JsonTree() override;
 };
 
@@ -199,7 +199,7 @@ class BinaryOperationAST : public ExpressionAST {
     delete rhs_;
   }
 
-  virtual double Evalutate(Context* context) override;
+  virtual double Evaluate(Context* context) override;
   virtual nlohmann::json JsonTree() override;
 };
 
@@ -216,7 +216,7 @@ class IdentifierAST : public ExpressionAST {
 
   inline const std::string& get_name() { return name_; }
 
-  virtual double Evalutate(Context* context) override;
+  virtual double Evaluate(Context* context) override;
   virtual nlohmann::json JsonTree() override;
 };
 
@@ -237,7 +237,7 @@ class VariableAssignmentAST : public ExpressionAST {
     delete value_;
   }
 
-  virtual double Evalutate(Context* context) override;
+  virtual double Evaluate(Context* context) override;
   virtual nlohmann::json JsonTree() override;
 };
 
@@ -258,6 +258,6 @@ class ExpressionAssignmentAST : public ExpressionAST {
     // TODO: Unsafe. Handle value deletion.
   }
 
-  virtual double Evalutate(Context* context) override;
+  virtual double Evaluate(Context* context) override;
   virtual nlohmann::json JsonTree() override;
 };

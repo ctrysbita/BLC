@@ -11,7 +11,7 @@ void OnParsed() {
   if (!ast) return;
 
   auto expression = dynamic_cast<ExpressionAST*>(ast);
-  if (expression) std::cout << "=>" << expression->Evalutate(ctx) << std::endl;
+  if (expression) std::cout << "=>" << expression->Evaluate(ctx) << std::endl;
   auto statement = dynamic_cast<StatementAST*>(ast);
   if (statement) statement->Execute(ctx);
 
