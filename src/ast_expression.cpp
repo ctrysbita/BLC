@@ -1,5 +1,6 @@
 #include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/Type.h>
+#include <iostream>
 #include <string>
 #include "ast.h"
 #include "blc.tab.hpp"
@@ -104,12 +105,23 @@ Value* BinaryOperationAST::GenIR(Context* context) {
 }
 
 double IdentifierAST::Evaluate(Context* context) {
-  auto symbol = context->blocks_.top()->get_symbol(name_);
-  try {
-    return std::get<double>(symbol);
-  } catch (...) {
-    return std::get<ExpressionAST*>(symbol)->Evaluate(context);
+  for (auto it = context->blocks_.rbegin(); it != context->blocks_.rend();
+       ++it) {
+    auto symbol = (*it)->get_symbol(name_);
+    if (!symbol.has_value()) continue;
+    auto value = symbol.value();
+    switch (value.index()) {
+      case 0:
+        return std::get<double>(value);
+      case 1:
+        return std::get<ExpressionAST*>(value)->Evaluate(context);
+      default:
+        break;
+    }
   }
+
+  std::cout << "Warning: Use of undefined variable." << std::endl;
+  return 0;
 }
 
 nlohmann::json IdentifierAST::JsonTree() {
@@ -121,8 +133,8 @@ nlohmann::json IdentifierAST::JsonTree() {
 
 double VariableAssignmentAST::Evaluate(Context* context) {
   auto value = value_->Evaluate(context);
-  context->blocks_.top()->set_symbol(name_->get_name(),
-                                     BlockAST::SymbolType(value));
+  context->blocks_.back()->set_symbol(name_->get_name(),
+                                      BlockAST::SymbolType(value));
   return value;
 }
 
@@ -134,9 +146,17 @@ nlohmann::json VariableAssignmentAST::JsonTree() {
   return json;
 }
 
+Value* VariableAssignmentAST::GenIR(Context* context) {
+  auto instruction = context->builder_.CreateAlloca(
+      Type::getFloatTy(context->llvm_context_), nullptr, name_->get_name());
+  Value* value = value_->GenIR(context);
+  context->builder_.CreateStore(instruction, value);
+  return instruction;
+}
+
 double ExpressionAssignmentAST::Evaluate(Context* context) {
-  context->blocks_.top()->set_symbol(name_->get_name(),
-                                     BlockAST::SymbolType(value_));
+  context->blocks_.back()->set_symbol(name_->get_name(),
+                                      BlockAST::SymbolType(value_));
   return value_->Evaluate(context);
 }
 

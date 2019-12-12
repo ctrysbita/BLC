@@ -96,7 +96,9 @@ class BlockAST : public StatementAST {
   /**
    * @brief Symbol table for current code block.
    */
-  std::map<std::string, SymbolType*> symbols_;
+  std::map<std::string, SymbolType> symbols_;
+
+  std::map<std::string, llvm::Value*> llvm_symbols_;
 
   /**
    * @brief Statements and expressions in current code block.
@@ -107,13 +109,15 @@ class BlockAST : public StatementAST {
   BlockAST() {}
   virtual ~BlockAST() {}
 
-  inline SymbolType get_symbol(std::string name) { return *symbols_[name]; }
+  inline std::optional<SymbolType> get_symbol(std::string name) {
+    if (symbols_.find(name) != symbols_.end()) return symbols_[name];
+    return {};
+  }
   inline void set_symbol(std::string name, SymbolType&& value) {
-    // TODO: Unsafe.
-    if (symbols_.find(name) != symbols_.end())
-      *symbols_[name] = value;
-    else
-      symbols_.insert({name, new SymbolType(value)});
+    auto it = symbols_.find(name);
+    if (it != symbols_.end() && it->second.index() == 1)
+      delete std::get<ExpressionAST*>(it->second);
+    symbols_[name] = value;
   }
 
   /**
@@ -241,6 +245,7 @@ class VariableAssignmentAST : public ExpressionAST {
 
   virtual double Evaluate(Context* context) override;
   virtual nlohmann::json JsonTree() override;
+  virtual llvm::Value* GenIR(Context* context) override;
 };
 
 /**
