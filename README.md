@@ -134,5 +134,111 @@ class ExpressionAST : public AST {
 
 Like `StatementAST`, it overrides the `JsonTree` and `GenIR` methods, but defines them as pure virtual methods. Since the expression must have a type, `ExpressionAST` is defined as an abstract class and is not instantiable. However, the `StatementAST` can be instantiated, becouse the program allows empty statement inputs. The major difference between expression nodes and statement nodes is that expression nodes can be evaluatd and a double type result will be returned, while statement nodes can be executed but no value will be returned. 
 
-Expression nodes can have the type of  `DoubleAST`, `BinaryOperationAST`, `IdentifierAST`, `VariableAssignmentAST` or `ExpressionAssignmentAST`. This report will explain all these classes in order. 
+Expression nodes can have the type of  `DoubleAST`, `BinaryOperationAST`, `IdentifierAST`, `VariableAssignmentAST` or `ExpressionAssignmentAST`. The following of this report will explain all these classes in order. 
 
+`DoubleAST` is the node type for a single double number. Since all the numbers in the program are of type double, all number nodes are represented by the `DoubleAST`. Its body is as follows.
+
+```c++
+class DoubleAST : public ExpressionAST {
+ private:
+  double value_;
+
+ public:
+  DoubleAST(std::string* value) : value_(std::stod(*value)) {}
+  virtual ~DoubleAST() {}
+
+  virtual double Evaluate(Context* context) override;
+  virtual nlohmann::json JsonTree() override;
+};
+```
+
+It has a constructor which takes a string as parameter and translates it into a double value. The double value is stored as a private member `value_`. `DoubleAST` overrides the method evaluate, which returns its member `value_` directly as a result. This class also overrides the `JsonTree` method, which returns its tree structure as a `nlohmann::json` object. 
+
+`BinaryOperationAST` is the node type for binary operations, for instance, plus minus, multiplication and division between two numbers. The body of this class is as follows. 
+
+```c++
+class BinaryOperationAST : public ExpressionAST {
+ private:
+  int type_;
+  ExpressionAST* lhs_;
+  ExpressionAST* rhs_;
+
+ public:
+  BinaryOperationAST(int type, ExpressionAST* lhs, ExpressionAST* rhs)
+      : type_(type), lhs_(lhs), rhs_(rhs) {}
+  virtual ~BinaryOperationAST() {
+    delete lhs_;
+    delete rhs_;
+  }
+
+  virtual double Evaluate(Context* context) override;
+  virtual nlohmann::json JsonTree() override;
+};
+```
+
+The private member `type_` is for identifying the type of binary operation the node is representing. The two operands for a binary operation are seen as left and right children for the node. According to the grammar definition, they both should be expressions. Therefore, two private members `lhs_` and `rhs_` are used to access the two operands; they are two pointers of type `ExpressionAST`, which point to the left and right child of this node respectively. The constructor of this class initializes the members, while the destructor deletes both children in case of memory overflow. Like the previous class, the `evaluate` method evaluates the binary operation with both operands and returns the result. The `JsonTree` returns the representation of the node's tree structure. 
+
+`IdentifierAST` is the node type for variable identifiers. In the program, users can use variables with names of unlimited lengh, and the identifier is represented using this class. The body of this class is as follows. 
+
+```c++
+class IdentifierAST : public ExpressionAST {
+ private:
+  std::string name_;
+
+ public:
+  IdentifierAST(std::string* name) : name_(*name) { delete name; }
+  virtual ~IdentifierAST() {}
+
+  inline const std::string& get_name() { return name_; }
+
+  virtual double Evaluate(Context* context) override;
+  virtual nlohmann::json JsonTree() override;
+};
+```
+
+The private member `name_` is used to store the name of the identifier. There is also a `get_name` method to retrive the name of this identifier. Like previous classes, the class overrides  the`Evaluate` method, which returns the value of this identifier. It also overrides the `JsonTree` method that returns the tree structure for this node. 
+
+`VariableAssignmentAST` is the node type for variable assignments. In the program, variable assignment is the operation that assigns an expression to a variable. The body of this class is as follows. 
+
+```c++
+class VariableAssignmentAST : public ExpressionAST {
+ private:
+  IdentifierAST* name_;
+  ExpressionAST* value_;
+
+ public:
+  VariableAssignmentAST(IdentifierAST* name, ExpressionAST* value)
+      : name_(name), value_(value) {}
+  virtual ~VariableAssignmentAST() {
+    delete name_;
+    delete value_;
+  }
+
+  virtual double Evaluate(Context* context) override;
+  virtual nlohmann::json JsonTree() override;
+};
+```
+
+The private member `name_` is the pointer to the identifier object of the target variable, and `value_` is the pointer to the node of the source expression. Other methods have the same meaning as those in previous class. 
+
+`ExpressionAssignmentAST` is the node type for expression assignments. Expression assignment is logically similar to variable assignment, but with different behaviors. The body of this class is as follows. 
+
+```c++
+class ExpressionAssignmentAST : public ExpressionAST {
+ private:
+  IdentifierAST* name_;
+  ExpressionAST* value_;
+
+ public:
+  ExpressionAssignmentAST(IdentifierAST* name, ExpressionAST* value)
+      : name_(name), value_(value) {}
+  virtual ~ExpressionAssignmentAST() {
+    delete name_;
+  }
+
+  virtual double Evaluate(Context* context) override;
+  virtual nlohmann::json JsonTree() override;
+};
+```
+
+As seen from the code, the `ExpressionAssignmentAST` is very similar to `VariableAssignmentAST`. However, in method `Evaluate` it assigns the source expression to the destination identifier while in the same method of `VariableAssignmentAST` the resulting value of the source expression is assigned to the destination identifier. For this reason, in the destructor it does not delete the pointer of `ExpressionAST`. After the expression assignment, the destination identifier refers to an expression, which will be evaluated everytime the program uses the identifier. 
