@@ -1,6 +1,10 @@
+#include <llvm/IR/IRBuilder.h>
+#include <llvm/IR/Type.h>
 #include <string>
 #include "ast.h"
 #include "blc.tab.hpp"
+
+using namespace llvm;
 
 double DoubleAST::Evaluate(Context* context) { return value_; }
 
@@ -11,28 +15,35 @@ nlohmann::json DoubleAST::JsonTree() {
   return json;
 }
 
+Value* DoubleAST::GenIR(Context* context) {
+  return ConstantFP::get(Type::getFloatTy(context->llvm_context_), value_);
+}
+
 double BinaryOperationAST::Evaluate(Context* context) {
+  auto lhs = lhs_->Evaluate(context);
+  auto rhs = rhs_->Evaluate(context);
+
   switch (type_) {
     case '+':
-      return lhs_->Evaluate(context) + rhs_->Evaluate(context);
+      return lhs + rhs;
     case '-':
-      return lhs_->Evaluate(context) - rhs_->Evaluate(context);
+      return lhs - rhs;
     case '*':
-      return lhs_->Evaluate(context) * rhs_->Evaluate(context);
+      return lhs * rhs;
     case '/':
-      return lhs_->Evaluate(context) / rhs_->Evaluate(context);
+      return lhs / rhs;
     case '>':
-      return lhs_->Evaluate(context) > rhs_->Evaluate(context);
+      return lhs > rhs;
     case '<':
-      return lhs_->Evaluate(context) < rhs_->Evaluate(context);
+      return lhs < rhs;
     case GEQ:
-      return lhs_->Evaluate(context) >= rhs_->Evaluate(context);
+      return lhs >= rhs;
     case LEQ:
-      return lhs_->Evaluate(context) <= rhs_->Evaluate(context);
+      return lhs <= rhs;
     case EQ:
-      return lhs_->Evaluate(context) == rhs_->Evaluate(context);
+      return lhs == rhs;
     case NE:
-      return lhs_->Evaluate(context) != rhs_->Evaluate(context);
+      return lhs != rhs;
     default:
       return 0;
   }
@@ -60,6 +71,36 @@ nlohmann::json BinaryOperationAST::JsonTree() {
       json["operationType"] = std::string(1, type_);
   }
   return json;
+}
+
+Value* BinaryOperationAST::GenIR(Context* context) {
+  Value* lhs = lhs_->GenIR(context);
+  Value* rhs = rhs_->GenIR(context);
+
+  switch (type_) {
+    case '+':
+      return context->builder_.CreateFAdd(lhs, rhs, "tmp");
+    case '-':
+      return context->builder_.CreateFSub(lhs, rhs, "tmp");
+    case '*':
+      return context->builder_.CreateFMul(lhs, rhs, "tmp");
+    case '/':
+      return context->builder_.CreateFDiv(lhs, rhs, "tmp");
+    case '>':
+      return context->builder_.CreateFCmpOGT(lhs, rhs, "tmp");
+    case '<':
+      return context->builder_.CreateFCmpOLT(lhs, rhs, "tmp");
+    case GEQ:
+      return context->builder_.CreateFCmpOGE(lhs, rhs, "tmp");
+    case LEQ:
+      return context->builder_.CreateFCmpOLE(lhs, rhs, "tmp");
+    case EQ:
+      return context->builder_.CreateFCmpOEQ(lhs, rhs, "tmp");
+    case NE:
+      return context->builder_.CreateFCmpONE(lhs, rhs, "tmp");
+    default:
+      return nullptr;
+  }
 }
 
 double IdentifierAST::Evaluate(Context* context) {

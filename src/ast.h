@@ -180,6 +180,7 @@ class DoubleAST : public ExpressionAST {
 
   virtual double Evaluate(Context* context) override;
   virtual nlohmann::json JsonTree() override;
+  virtual llvm::Value* GenIR(Context* context) override;
 };
 
 /**
@@ -201,6 +202,7 @@ class BinaryOperationAST : public ExpressionAST {
 
   virtual double Evaluate(Context* context) override;
   virtual nlohmann::json JsonTree() override;
+  virtual llvm::Value* GenIR(Context* context) override;
 };
 
 /**
