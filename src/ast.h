@@ -152,14 +152,17 @@ class BlockAST : public StatementAST {
 class IfAST : public StatementAST {
  private:
   ExpressionAST* condition_;
-  StatementAST* statement_;
+  StatementAST* then_;
+  StatementAST* else_;
 
  public:
-  IfAST(ExpressionAST* condition, StatementAST* statement)
-      : condition_(condition), statement_(statement) {}
+  IfAST(ExpressionAST* condition, StatementAST* then_statement,
+        StatementAST* else_statement = nullptr)
+      : condition_(condition), then_(then_statement), else_(else_statement) {}
   virtual ~IfAST() {
     delete condition_;
-    delete statement_;
+    delete then_;
+    delete else_;
   }
 
   virtual void Execute(Context* context) override;

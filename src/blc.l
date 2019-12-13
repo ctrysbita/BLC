@@ -11,6 +11,7 @@ void yyerror(std::string);
 
 "expr" return EXPR;
 "if" return IF;
+"else" return ELSE;
 "while" return WHILE;
 
 [0-9]*\.[0-9]+|[0-9]+ { yylval.value = new std::string(yytext); return DOUBLE_NUM; }

@@ -55,14 +55,18 @@ Value* BlockAST::GenIR(Context* context) {
 };
 
 void IfAST::Execute(Context* context) {
-  if (condition_->Evaluate(context)) statement_->Execute(context);
+  if (condition_->Evaluate(context))
+    then_->Execute(context);
+  else if (else_)
+    else_->Execute(context);
 }
 
 nlohmann::json IfAST::JsonTree() {
   nlohmann::json json;
   json["type"] = "If";
   json["condition"] = condition_->JsonTree();
-  json["statement"] = statement_->JsonTree();
+  json["then"] = then_->JsonTree();
+  if (else_) json["else"] = else_->JsonTree();
   return json;
 }
 
