@@ -162,10 +162,9 @@ class IfAST : public StatementAST {
     delete statement_;
   }
 
-  virtual void Execute(Context* context) override {
-    if (condition_->Evaluate(context)) statement_->Execute(context);
-  }
+  virtual void Execute(Context* context) override;
   virtual nlohmann::json JsonTree() override;
+  virtual llvm::Value* GenIR(Context* context) override;
 };
 
 class WhileAST : public StatementAST {
@@ -181,10 +180,9 @@ class WhileAST : public StatementAST {
     delete statement_;
   }
 
-  virtual void Execute(Context* context) override {
-    while (condition_->Evaluate(context)) statement_->Execute(context);
-  }
+  virtual void Execute(Context* context) override;
   virtual nlohmann::json JsonTree() override;
+  virtual llvm::Value* GenIR(Context* context) override;
 };
 
 /**
