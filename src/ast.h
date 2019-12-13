@@ -198,7 +198,7 @@ class WhileAST : public StatementAST {
 
  public:
   WhileAST(ExpressionAST* condition, AST* statement)
-      : condition_(condition), statement_(statement_) {}
+      : condition_(condition), statement_(statement) {}
   virtual ~WhileAST() {
     delete condition_;
     delete statement_;
@@ -219,6 +219,7 @@ class DoubleAST : public ExpressionAST {
 
  public:
   DoubleAST(std::string* value) : value_(std::stod(*value)) {}
+  DoubleAST(double value) : value_(value) {}
   virtual ~DoubleAST() {}
 
   virtual double Evaluate(Context* context) override;

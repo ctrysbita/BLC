@@ -26,6 +26,7 @@ extern AST* ast;
 %left GEQ LEQ EQ NE
 %left '+' '-'
 %left '*' '/' '%'
+%nonassoc ';'
 
 %type <statement> statement
 %type <statements> statements
@@ -37,17 +38,21 @@ extern AST* ast;
 %%
 
 program:
-program statement { ast = $2; OnParsed(); }
-|
+|program statement { ast = $2; OnParsed(); }
 ;
 
 statement:
 ';' { $$ = new StatementAST(); }
+| '{' '}' { $$ = new StatementAST(); }
 | expression ';' { $<expression>$ = $1; }
 | WHILE '(' expression ')' statement { $$ = new WhileAST($3, $5); }
-| IF '(' expression ')' statement { $$ = new IfAST($3, $5); }
+| IF '(' expression ')' statement optional_end { $$ = new IfAST($3, $5); }
 | IF '(' expression ')' statement ELSE statement { $$ = new IfAST($3, $5, $7); }
 | '{' statements '}' { $$ = (new BlockAST())->WithChildren($2); }
+;
+
+optional_end:
+| ';'
 ;
 
 statements:
@@ -60,7 +65,7 @@ DOUBLE_NUM { $$ = new DoubleAST($1); }
 | identifier { $$ = $1; }
 | identifier '=' expression { $$ = new VariableAssignmentAST($1, $3); }
 | EXPR identifier '=' expression { $$ = new ExpressionAssignmentAST($2, $4); }
-| '-' expression %prec ';' { $$ = $2; }
+| '-' expression %prec ';' { $$ = new BinaryOperationAST('-', new DoubleAST(0.0), $2); }
 | expression '+' expression { $$ = new BinaryOperationAST('+', $1, $3); }
 | expression '-' expression { $$ = new BinaryOperationAST('-', $1, $3); }
 | expression '*' expression { $$ = new BinaryOperationAST('*', $1, $3); }
