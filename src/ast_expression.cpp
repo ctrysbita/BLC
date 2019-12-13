@@ -7,6 +7,11 @@
 
 using namespace llvm;
 
+void ExpressionAST::Run(Context* context) {
+  auto result = Evaluate(context);
+  std::cout << "=> " << result << std::endl;
+};
+
 double DoubleAST::Evaluate(Context* context) { return value_; }
 
 nlohmann::json DoubleAST::JsonTree() {

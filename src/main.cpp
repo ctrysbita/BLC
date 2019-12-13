@@ -11,13 +11,7 @@ auto ctx = new Context();
 void OnParsed() {
   if (!ast) return;
   // Interpreter
-  auto expression = dynamic_cast<ExpressionAST*>(ast);
-  if (expression) {
-    auto result = expression->Evaluate(ctx);
-    std::cout << "=> " << result << std::endl;
-  }
-  auto statement = dynamic_cast<StatementAST*>(ast);
-  if (statement) statement->Execute(ctx);
+  ast->Run(ctx);
   // JsonTree
   std::cout << "Parsed Syntax Tree:" << std::endl
             << ast->JsonTree().dump(4) << std::endl;

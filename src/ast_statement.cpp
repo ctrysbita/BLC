@@ -16,15 +16,7 @@ void BlockAST::Execute(Context* context) {
   context->blocks_.push_back(this);
 
   // Execute all statements in current block.
-  for (auto ast : children_) {
-    auto expression = dynamic_cast<ExpressionAST*>(ast);
-    if (expression) {
-      auto result = expression->Evaluate(context);
-      std::cout << "=> " << result << std::endl;
-    }
-    auto statement = dynamic_cast<StatementAST*>(ast);
-    if (statement) statement->Execute(context);
-  }
+  for (auto ast : children_) ast->Run(context);
 
   // Back to upper block.
   context->blocks_.pop_back();
@@ -56,9 +48,9 @@ Value* BlockAST::GenIR(Context* context) {
 
 void IfAST::Execute(Context* context) {
   if (condition_->Evaluate(context))
-    then_->Execute(context);
+    then_->Run(context);
   else if (else_)
-    else_->Execute(context);
+    else_->Run(context);
 }
 
 nlohmann::json IfAST::JsonTree() {
@@ -76,7 +68,7 @@ Value* IfAST::GenIR(Context* context) {
 }
 
 void WhileAST::Execute(Context* context) {
-  while (condition_->Evaluate(context)) statement_->Execute(context);
+  while (condition_->Evaluate(context)) statement_->Run(context);
 }
 
 nlohmann::json WhileAST::JsonTree() {

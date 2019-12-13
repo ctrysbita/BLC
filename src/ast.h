@@ -26,6 +26,13 @@ class AST {
   virtual nlohmann::json JsonTree() = 0;
 
   /**
+   * @brief A general interface for statements and expressions to run.
+   *
+   * @param context Context that store associated information.
+   */
+  virtual void Run(Context* context) = 0;
+
+  /**
    * @brief Generate LLVM IR for current AST.
    *
    * @param context Context that store associated information.
@@ -43,6 +50,13 @@ class StatementAST : public AST {
  public:
   StatementAST() {}
   virtual ~StatementAST() {}
+
+  /**
+   * @brief Execute statement.
+   *
+   * @param context Context that store associated information.
+   */
+  virtual void Run(Context* context) final override { Execute(context); };
 
   /**
    * @brief Execute current statement.
@@ -65,6 +79,13 @@ class ExpressionAST : public AST {
  public:
   ExpressionAST() {}
   virtual ~ExpressionAST() {}
+
+  /**
+   * @brief Evaluate expression and print result.
+   *
+   * @param context Context that store associated information.
+   */
+  virtual void Run(Context* context) final override;
 
   /**
    * @brief Evaluate current expression.
@@ -152,12 +173,12 @@ class BlockAST : public StatementAST {
 class IfAST : public StatementAST {
  private:
   ExpressionAST* condition_;
-  StatementAST* then_;
-  StatementAST* else_;
+  AST* then_;
+  AST* else_;
 
  public:
-  IfAST(ExpressionAST* condition, StatementAST* then_statement,
-        StatementAST* else_statement = nullptr)
+  IfAST(ExpressionAST* condition, AST* then_statement,
+        AST* else_statement = nullptr)
       : condition_(condition), then_(then_statement), else_(else_statement) {}
   virtual ~IfAST() {
     delete condition_;
@@ -173,11 +194,11 @@ class IfAST : public StatementAST {
 class WhileAST : public StatementAST {
  private:
   ExpressionAST* condition_;
-  StatementAST* statement_;
+  AST* statement_;
 
  public:
-  WhileAST(ExpressionAST* condition, StatementAST* statement)
-      : condition_(condition), statement_(statement) {}
+  WhileAST(ExpressionAST* condition, AST* statement)
+      : condition_(condition), statement_(statement_) {}
   virtual ~WhileAST() {
     delete condition_;
     delete statement_;
