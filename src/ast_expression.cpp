@@ -136,7 +136,7 @@ llvm::Value* IdentifierAST::GenIR(Context* context) {
   for (auto it = context->blocks_.rbegin(); it != context->blocks_.rend();
        ++it) {
     auto symbol = (*it)->get_llvm_symbol(name_);
-    if (symbol) return symbol;
+    if (symbol) return context->builder_.CreateLoad(symbol, false, "");
   }
 
   std::cout << "Error: Use of undefined variable." << std::endl;
@@ -176,15 +176,15 @@ Value* VariableAssignmentAST::GenIR(Context* context) {
        ++it) {
     auto symbol = (*it)->get_llvm_symbol(name_->get_name());
     if (symbol) {
-      (*it)->set_llvm_symbol(name_->get_name(), value);
-      return value;
+      context->builder_.CreateStore(symbol, value);
+      return symbol;
     }
   }
 
   auto instruction = context->builder_.CreateAlloca(
       Type::getFloatTy(context->llvm_context_), nullptr, name_->get_name());
   context->builder_.CreateStore(instruction, value);
-  context->blocks_.back()->set_llvm_symbol(name_->get_name(), value);
+  context->blocks_.back()->set_llvm_symbol(name_->get_name(), instruction);
   return instruction;
 }
 

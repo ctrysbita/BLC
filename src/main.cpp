@@ -41,6 +41,7 @@ int main() {
                                     ctx->llvm_module_);
   auto bb = llvm::BasicBlock::Create(ctx->llvm_context_, "entry", fun);
   ctx->builder_.SetInsertPoint(bb);
+  ctx->current_function_ = fun;
 
   yyparse();
   return 0;

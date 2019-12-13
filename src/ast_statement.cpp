@@ -1,6 +1,9 @@
+#include <llvm/IR/Value.h>
 #include <iostream>
 #include "ast.h"
 #include "blc.tab.hpp"
+
+using namespace llvm;
 
 BlockAST* BlockAST::WithChildren(std::list<AST*>* asts) {
   children_.splice(children_.end(), *asts);
@@ -36,6 +39,19 @@ nlohmann::json BlockAST::JsonTree() {
   json["children"] = children;
   return json;
 }
+
+Value* BlockAST::GenIR(Context* context) {
+  context->blocks_.push_back(this);
+
+  auto bblock = BasicBlock::Create(context->llvm_context_, "block",
+                                   context->current_function_);
+  context->builder_.SetInsertPoint(bblock);
+
+  for (auto child : children_) child->GenIR(context);
+
+  context->blocks_.pop_back();
+  return nullptr;
+};
 
 nlohmann::json IfAST::JsonTree() {
   nlohmann::json json;

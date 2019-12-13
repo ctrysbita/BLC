@@ -12,7 +12,7 @@ class Context {
   llvm::LLVMContext llvm_context_;
   llvm::Module llvm_module_;
   llvm::IRBuilder<> builder_;
-  // llvm::Function* current_function_ = nullptr;
+  llvm::Function* current_function_ = nullptr;
 
   std::list<BlockAST*> blocks_;
 

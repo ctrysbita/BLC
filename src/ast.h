@@ -146,6 +146,7 @@ class BlockAST : public StatementAST {
 
   virtual void Execute(Context* context) override;
   virtual nlohmann::json JsonTree() override;
+  virtual llvm::Value* GenIR(Context* context) override;
 };
 
 class IfAST : public StatementAST {
