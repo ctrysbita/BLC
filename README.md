@@ -98,11 +98,12 @@ class AST {
   AST() {}
   virtual ~AST() {}
   virtual nlohmann::json JsonTree() = 0;
+  virtual void Run(Context* context) = 0;
   virtual llvm::Value* GenIR(Context* context) = 0;
 };
 ```
 
-This class is the parent of all kinds of tree nodes used in our program. It is an abstract class with two pure virtual methods, which are `JsonTree` and `GenIR` respectively. These two methods are two tree traverses, namely the syntax tree printer and compiler. JsonTree is used to generate Json output for the constructed syntax tree, and GenIR is used to generate LLVM Intermediate Representation for the constructed syntax tree. 
+This class is the parent of all kinds of tree nodes used in our program. It is an abstract class with three pure virtual methods, which are `JsonTree`, `Run` and `GenIR`. These three methods are three tree traverses, namely the syntax tree printer, interpreter and compiler. `JsonTree` is used to generate Json output for the constructed syntax tree, `Run` is used to interpret the user input and `GenIR` is used to generate LLVM Intermediate Representation for the constructed syntax tree. 
 
 There are two types of tree nodes in the program, which are called statement nodes and expression nodes. Statement nodes are inherited from `StatementAST`, whose body is as follows. 
 
@@ -166,17 +167,13 @@ class BinaryOperationAST : public ExpressionAST {
  public:
   BinaryOperationAST(int type, ExpressionAST* lhs, ExpressionAST* rhs)
       : type_(type), lhs_(lhs), rhs_(rhs) {}
-  virtual ~BinaryOperationAST() {
-    delete lhs_;
-    delete rhs_;
-  }
-
+  virtual ~BinaryOperationAST();
   virtual double Evaluate(Context* context) override;
   virtual nlohmann::json JsonTree() override;
 };
 ```
 
-The private member `type_` is for identifying the type of binary operation the node is representing. The two operands for a binary operation are seen as left and right children for the node. According to the grammar definition, they both should be expressions. Therefore, two private members `lhs_` and `rhs_` are used to access the two operands; they are two pointers of type `ExpressionAST`, which point to the left and right child of this node respectively. The constructor of this class initializes the members, while the destructor deletes both children in case of memory overflow. Like the previous class, the `evaluate` method evaluates the binary operation with both operands and returns the result. The `JsonTree` returns the representation of the node's tree structure. 
+The private member `type_` is for identifying the type of binary operation the node is representing. The two operands for a binary operation are seen as left and right children for the node. According to the grammar definition, they both should be expressions. Therefore, two private members `lhs_` and `rhs_` are used to access the two operands; they are two pointers of type `ExpressionAST`, which point to the left and right child of this node respectively. Like the previous class, the `evaluate` method evaluates the binary operation with both operands and returns the result. The `JsonTree` returns the representation of the node's tree structure. 
 
 `IdentifierAST` is the node type for variable identifiers. In the program, users can use variables with names of unlimited lengh, and the identifier is represented using this class. The body of this class is as follows. 
 
@@ -209,11 +206,7 @@ class VariableAssignmentAST : public ExpressionAST {
  public:
   VariableAssignmentAST(IdentifierAST* name, ExpressionAST* value)
       : name_(name), value_(value) {}
-  virtual ~VariableAssignmentAST() {
-    delete name_;
-    delete value_;
-  }
-
+  virtual ~VariableAssignmentAST();
   virtual double Evaluate(Context* context) override;
   virtual nlohmann::json JsonTree() override;
 };
@@ -232,10 +225,7 @@ class ExpressionAssignmentAST : public ExpressionAST {
  public:
   ExpressionAssignmentAST(IdentifierAST* name, ExpressionAST* value)
       : name_(name), value_(value) {}
-  virtual ~ExpressionAssignmentAST() {
-    delete name_;
-  }
-
+  virtual ~ExpressionAssignmentAST();
   virtual double Evaluate(Context* context) override;
   virtual nlohmann::json JsonTree() override;
 };
@@ -279,7 +269,7 @@ This class defined a public type named `SymbolType`, which is of type `std::vari
 
 The functions `get_symbol`, `set_symbol` and `get_llvm_symbol`, `set_llvm_symbol` act as getter and setter for `symbols_` and `llvm_symbols_` respectively. Note that the return value of `get_symbol` is of type `std::optional`, because the name may not be found in the symbol table, which means the variable is used before definition and an empty value will be returned. Also, one of the parameters of `set_symbol` is `SymbolType&& value`, which is called a R-value reference; this allows the program to put the parameter object directly to the map without copying, which can improve operation efficiency. 
 
-The function `WithChildren` is used to set the children list of the block object, it is called once the subtrees of this node are constructed. `Execute` method is used to execute the operations of the children of the block object, which acts as interpreter. The other two overridden methods have similar functionalities as the previous classes. 
+The function `WithChildren` is used to set the children list of the block object, it is called once the subtrees of this node are constructed. `Execute` method executes the block object in a certain way, which acts as interpreter. The other two overridden methods have similar functionalities as the previous classes. 
 
 `WhileAST` is the node type for while statements. The body of the class is as follows. 
 
@@ -292,10 +282,7 @@ class WhileAST : public StatementAST {
  public:
   WhileAST(ExpressionAST* condition, StatementAST* statement)
       : condition_(condition), statement_(statement) {}
-  virtual ~WhileAST() {
-    delete condition_;
-    delete statement_;
-  }
+  virtual ~WhileAST();
 
   virtual void Execute(Context* context) override {
     while (condition_->Evaluate(context)) statement_->Execute(context);
@@ -303,4 +290,28 @@ class WhileAST : public StatementAST {
   virtual nlohmann::json JsonTree() override;
 };
 ```
+
+This class has two private members, `condition_` and `statement_`. `condition_` points to an `ExpressionAST` which is used as the condition of while loop. `statement_` points to a `StatementAST` which contains the instructions the loop body does. The class also contains three overridden methods with similar functionalities as previous classes. 
+
+`IFAST` is the node type for if statements. The body of the class is as follows. 
+
+```c++
+class IfAST : public StatementAST {
+ private:
+  ExpressionAST* condition_;
+  AST* then_;
+  AST* else_;
+
+ public:
+  IfAST(ExpressionAST* condition, AST* then_statement,
+        AST* else_statement = nullptr)
+      : condition_(condition), then_(then_statement), else_(else_statement) {}
+  virtual ~IfAST();
+  virtual void Execute(Context* context) override;
+  virtual nlohmann::json JsonTree() override;
+  virtual llvm::Value* GenIR(Context* context) override;
+};
+```
+
+The member `condition_` stores a pointer to `ExpressionAST`, whose result of evaluation will be used as the condition of the if statement. The members `then_` and `else_` are two pointers to `AST`, representing the instructions needed to be run when the condition passes and fails respectively. 
 
