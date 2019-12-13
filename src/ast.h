@@ -118,15 +118,22 @@ class BlockAST : public StatementAST {
    * @param name Symbol name.
    * @return std::optional<SymbolType> Symbol value.
    */
-  inline std::optional<SymbolType> get_symbol(std::string name) {
+  inline std::optional<SymbolType> get_symbol(const std::string& name) {
     if (symbols_.find(name) != symbols_.end()) return symbols_[name];
     return {};
   }
-  inline void set_symbol(std::string name, SymbolType&& value) {
+  inline void set_symbol(const std::string& name, SymbolType&& value) {
     auto it = symbols_.find(name);
     if (it != symbols_.end() && it->second.index() == 1)
       delete std::get<ExpressionAST*>(it->second);
     symbols_[name] = value;
+  }
+
+  inline llvm::Value* get_llvm_symbol(const std::string& name) {
+    return llvm_symbols_[name];
+  }
+  inline void set_llvm_symbol(const std::string& name, llvm::Value* value) {
+    llvm_symbols_[name] = value;
   }
 
   /**
@@ -233,6 +240,7 @@ class IdentifierAST : public ExpressionAST {
 
   virtual double Evaluate(Context* context) override;
   virtual nlohmann::json JsonTree() override;
+  virtual llvm::Value* GenIR(Context* context) override;
 };
 
 /**

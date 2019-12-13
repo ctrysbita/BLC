@@ -131,6 +131,18 @@ nlohmann::json IdentifierAST::JsonTree() {
   return json;
 }
 
+llvm::Value* IdentifierAST::GenIR(Context* context) {
+  // Find symbol through table.
+  for (auto it = context->blocks_.rbegin(); it != context->blocks_.rend();
+       ++it) {
+    auto symbol = (*it)->get_llvm_symbol(name_);
+    if (symbol) return symbol;
+  }
+
+  std::cout << "Error: Use of undefined variable." << std::endl;
+  return nullptr;
+}
+
 double VariableAssignmentAST::Evaluate(Context* context) {
   auto value = value_->Evaluate(context);
 
@@ -158,10 +170,21 @@ nlohmann::json VariableAssignmentAST::JsonTree() {
 }
 
 Value* VariableAssignmentAST::GenIR(Context* context) {
+  Value* value = value_->GenIR(context);
+
+  for (auto it = context->blocks_.rbegin(); it != context->blocks_.rend();
+       ++it) {
+    auto symbol = (*it)->get_llvm_symbol(name_->get_name());
+    if (symbol) {
+      (*it)->set_llvm_symbol(name_->get_name(), value);
+      return value;
+    }
+  }
+
   auto instruction = context->builder_.CreateAlloca(
       Type::getFloatTy(context->llvm_context_), nullptr, name_->get_name());
-  Value* value = value_->GenIR(context);
   context->builder_.CreateStore(instruction, value);
+  context->blocks_.back()->set_llvm_symbol(name_->get_name(), value);
   return instruction;
 }
 

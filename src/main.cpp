@@ -22,11 +22,11 @@ void OnParsed() {
   std::cout << "Parsed Syntax Tree:" << std::endl
             << ast->JsonTree().dump(4) << std::endl;
   // IR
-  // auto ir = ast->GenIR(ctx);
-  // std::string ir_string;
-  // llvm::raw_string_ostream ofs(ir_string);
-  // ctx->llvm_module_.print(ofs, nullptr);
-  // std::cout << "Generated LLVM IR:" << std::endl << ir_string << std::endl;
+  auto ir = ast->GenIR(ctx);
+  std::string ir_string;
+  llvm::raw_string_ostream ofs(ir_string);
+  ctx->llvm_module_.print(ofs, nullptr);
+  std::cout << "Generated LLVM IR:" << std::endl << ir_string << std::endl;
 
   delete ast;
 }
