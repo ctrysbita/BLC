@@ -176,14 +176,14 @@ Value* VariableAssignmentAST::GenIR(Context* context) {
        ++it) {
     auto symbol = (*it)->get_llvm_symbol(name_->get_name());
     if (symbol) {
-      context->builder_.CreateStore(symbol, value);
+      context->builder_.CreateStore(value, symbol);
       return symbol;
     }
   }
 
   auto instruction = context->builder_.CreateAlloca(
       Type::getFloatTy(context->llvm_context_), nullptr, name_->get_name());
-  context->builder_.CreateStore(instruction, value);
+  context->builder_.CreateStore(value, instruction);
   context->blocks_.back()->set_llvm_symbol(name_->get_name(), instruction);
   return instruction;
 }
