@@ -323,6 +323,118 @@ class IfAST : public StatementAST {
 The member `condition_` stores a pointer to `ExpressionAST`, whose result of evaluation will be used as the condition of the if statement. The members `then_` and `else_` are two pointers to `AST`, representing the instructions needed to be run when the condition passes and fails respectively.
 
 
+### Syntax Analyzer
+
+```c++
+%{
+#include <string>
+#include <list>
+#include "ast.h"
+
+extern int yylex();
+extern void yyerror(std::string);
+extern void OnParsed();
+
+extern AST* ast;
+%}
+
+```
+
+Firstly, the code includes the head file `ast.h` , and defines the extern functions `yylex()` , `yyerror()` , `OnParsed()`  and the extern pointer `ast`  at the beginning. 
+
+```c++
+%union {
+  std::string* value;
+
+  ExpressionAST* expression;
+  StatementAST* statement;
+  IdentifierAST* identifier;
+
+  std::list<AST*>* statements;
+}
+
+%token <value> IDENTIFIER DOUBLE_NUM
+%token EXPR IF WHILE
+%right '='
+%left GEQ LEQ EQ NE
+%left '+' '-'
+%left '*' '/' '%'
+
+%type <statement> statement
+%type <statements> statements
+%type <identifier> identifier
+%type <expression> expression
+
+%start program
+
+%%
+```
+
+Secondly, the types that might be used are defined in `union` . Following the union, `IDENTIFIER` , `DOUBLE_NUM` , `EXPR` , `IF` , and `WHILE`  are defined as token, meanwhile, `IDENTIFIER`  and `DOUBLE_NUM` are defined to have type of `value` . The associativity of the operands are also defined as followed. Lastly, the types of the non-terminals are defined separately to be in different types. 
+
+```c++
+program:
+program statement { ast = $2; OnParsed(); }
+|
+;
+
+statement:
+';' { $$ = new StatementAST(); }
+| expression ';' { $<expression>$ = $1; }
+| WHILE '(' expression ')' statement { $$ = new WhileAST($3, $5); }
+| IF '(' expression ')' statement { $$ = new IfAST($3, $5); }
+| '{' statements '}' { $$ = (new BlockAST())->WithChildren($2); }
+;
+
+statements:
+statement { $$ = new std::list<AST*>(); $$->push_back($1); }
+| statements statement { $1->push_back($2); }
+;
+```
+
+The parsing starts with `program`  and  `statement` first define that any `expression`  in this grammar should be end with the semicolon. And then the productions define the grammar of the IF statement, While statement and the block statement. Meanwhile, the productions of `statements`  define that `statements`  are either consists of a set of `statement`  or a single `statement` . 
+
+```c++
+expression:
+DOUBLE_NUM { $$ = new DoubleAST($1); }
+| identifier { $$ = $1; }
+| identifier '=' expression { $$ = new VariableAssignmentAST($1, $3); }
+| EXPR identifier '=' expression { $$ = new ExpressionAssignmentAST($2, $4); }
+| '-' expression %prec ';' { $$ = $2; }
+| expression '+' expression { $$ = new BinaryOperationAST('+', $1, $3); }
+| expression '-' expression { $$ = new BinaryOperationAST('-', $1, $3); }
+| expression '*' expression { $$ = new BinaryOperationAST('*', $1, $3); }
+| expression '/' expression { $$ = new BinaryOperationAST('/', $1, $3); }
+| expression '<' expression { $$ = new BinaryOperationAST('<', $1, $3); }
+| expression '>' expression { $$ = new BinaryOperationAST('>', $1, $3); }
+| expression GEQ expression { $$ = new BinaryOperationAST(GEQ, $1, $3); }
+| expression LEQ expression { $$ = new BinaryOperationAST(LEQ, $1, $3); }
+| expression NE expression { $$ = new BinaryOperationAST(NE, $1, $3); }
+| expression EQ expression { $$ = new BinaryOperationAST(EQ, $1, $3); }
+| '(' expression ')' { $$ = $2; }
+;
+```
+
+The productions of `expression` define that `expression`  can be a single double-type number or a single identifier. Meanwhile, it could also state the value assignment, arithmetic operations, including negation, addition, subtraction, multiplication and division, and comparison between two double-type numbers. 
+
+```c++
+identifier:
+IDENTIFIER { $$ = new IdentifierAST($1); }
+;
+
+%%
+```
+
+The production of `identifier`  states to create a new `identifier`  .
+
+```c++
+void yyerror(std::string s) {
+  fprintf(stdout, "%s\n", s.c_str());
+}
+```
+
+The `yyerror()` function states to detect and report the error that might appear in the program.
+
 ### Traverse Abstract Syntax Tree
 
 After an AST is constructed, by traversing through AST, three kind of outputs can be generated.
