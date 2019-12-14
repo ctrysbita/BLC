@@ -35,10 +35,6 @@ nlohmann::json BlockAST::JsonTree() {
 Value* BlockAST::GenIR(Context* context) {
   context->blocks_.push_back(this);
 
-  auto bblock = BasicBlock::Create(context->llvm_context_, "block",
-                                   context->current_function_);
-  context->builder_.SetInsertPoint(bblock);
-
   for (auto child : children_) child->GenIR(context);
 
   context->blocks_.pop_back();
@@ -63,8 +59,45 @@ nlohmann::json IfAST::JsonTree() {
 }
 
 Value* IfAST::GenIR(Context* context) {
+  auto func = context->builder_.GetInsertBlock()->getParent();
+  auto then_block = BasicBlock::Create(context->llvm_context_, "then");
+  auto after = BasicBlock::Create(context->llvm_context_, "after");
+
+  BasicBlock* else_block;
+  if (else_) else_block = BasicBlock::Create(context->llvm_context_, "else");
+
+  // Judge condition.
   auto condition_value = condition_->GenIR(context);
-  // TODO: Rest
+  if (condition_value->getType() == Type::getFloatTy(context->llvm_context_))
+    condition_value = context->builder_.CreateFCmpONE(
+        condition_value, ConstantFP::get(context->llvm_context_, APFloat(0.0)),
+        "if");
+  else
+    condition_value = context->builder_.CreateICmpNE(
+        condition_value, ConstantInt::get(context->llvm_context_, APInt(1, 0)),
+        "if");
+  context->builder_.CreateCondBr(condition_value, then_block,
+                                 else_ ? else_block : after);
+
+  // Generate then.
+  func->getBasicBlockList().push_back(then_block);
+  context->builder_.SetInsertPoint(then_block);
+  then_->GenIR(context);
+  context->builder_.CreateBr(after);
+
+  // Generate else if defined.
+  if (else_) {
+    func->getBasicBlockList().push_back(else_block);
+    context->builder_.SetInsertPoint(else_block);
+    then_->GenIR(context);
+    context->builder_.CreateBr(after);
+  }
+
+  // Generate after.
+  func->getBasicBlockList().push_back(after);
+  context->builder_.SetInsertPoint(after);
+
+  return Constant::getNullValue(Type::getInt32Ty(context->llvm_context_));
 }
 
 void WhileAST::Execute(Context* context) {
@@ -103,6 +136,7 @@ Value* WhileAST::GenIR(Context* context) {
   context->builder_.CreateCondBr(condition_value, loop, after);
 
   // Loop body.
+  func->getBasicBlockList().push_back(loop);
   context->builder_.SetInsertPoint(loop);
   statement_->GenIR(context);
   context->builder_.CreateBr(before);
@@ -111,5 +145,5 @@ Value* WhileAST::GenIR(Context* context) {
   func->getBasicBlockList().push_back(after);
   context->builder_.SetInsertPoint(after);
 
-  return nullptr;
+  return Constant::getNullValue(Type::getInt32Ty(context->llvm_context_));
 }

@@ -7,12 +7,15 @@
 
 class BlockAST;
 
+/**
+ * @brief Context that stored associated information for execution, evaluation
+ * and IR generation.
+ */
 class Context {
  public:
   llvm::LLVMContext llvm_context_;
   llvm::Module llvm_module_;
   llvm::IRBuilder<> builder_;
-  llvm::Function* current_function_ = nullptr;
 
   std::list<BlockAST*> blocks_;
 
