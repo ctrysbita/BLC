@@ -95,7 +95,7 @@ Since the installation process involves the compilation of LLVM source code, it 
 
 ## Code Explanation
 
-### Abstract syntax tree
+### Abstract Syntax Tree
 
 To represent the syntax tree,  a set of classes are created. The first class created is `AST`, the body of this class is as follows,
 
@@ -321,4 +321,37 @@ class IfAST : public StatementAST {
 ```
 
 The member `condition_` stores a pointer to `ExpressionAST`, whose result of evaluation will be used as the condition of the if statement. The members `then_` and `else_` are two pointers to `AST`, representing the instructions needed to be run when the condition passes and fails respectively.
+
+
+### Traverse Abstract Syntax Tree
+
+After an AST is constructed, by traversing through AST, three kind of outputs can be generated.
+
+- Evaluated result.
+- JSON format abstract syntax tree.
+- LLVM intermediate representation.
+
+While traversing through AST, we usually have some neccessary inforamtion to pass into child node or get from parent, the `Context` class is designed to store the information that passing through nodes.
+
+```c++
+class Context {
+ public:
+  llvm::LLVMContext llvm_context_;
+  llvm::Module llvm_module_;
+  llvm::IRBuilder<> builder_;
+
+  std::list<BlockAST*> blocks_;
+
+  Context();
+  ~Context();
+};
+```
+
+The `llvm_context_`, `llvm_module_` and `builder_` store context of constructing LLVM IR. Since BLC has interactive mode which interpret each line of code immediately, all generated IR codes are contained in a singl function (main) in a single module (blc). `blocks_` is the block stack that used to isolate symbol table for nested blcoks.
+
+#### Interpreter
+
+#### JSON Tree
+
+#### Intermediate Representation
 
