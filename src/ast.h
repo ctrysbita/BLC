@@ -313,19 +313,17 @@ class ExpressionAssignmentAST : public ExpressionAST {
 class FunctionAST : public StatementAST {
  private:
   IdentifierAST* name_;
-  std::list<IdentifierAST*>* parameters_;
+  std::list<IdentifierAST*>* arguments_;
   BlockAST* block_;
-
-  Context context;
 
  public:
   FunctionAST(IdentifierAST* name, std::list<IdentifierAST*>* parameters,
               BlockAST* block)
-      : name_(name), parameters_(parameters), block_(block) {}
+      : name_(name), arguments_(parameters), block_(block) {}
   ~FunctionAST() {
     delete name_;
-    for (auto parameter : *parameters_) delete parameter;
-    delete parameters_;
+    for (auto arg : *arguments_) delete arg;
+    delete arguments_;
     delete block_;
   }
 

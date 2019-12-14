@@ -6,6 +6,8 @@ extern int yyparse();
 
 // Parsed AST.
 AST* ast = nullptr;
+// Function table.
+std::map<std::string, FunctionAST*> functions;
 
 auto ctx = new Context();
 void OnParsed() {
@@ -38,10 +40,10 @@ void OnEnd() {
 int main(int argc, char* argv[]) {
   // Create a main function for interactive mode.
   ctx->blocks_.push_back(new BlockAST());
-  auto fun = llvm::Function::Create(
+  auto main_func = llvm::Function::Create(
       llvm::FunctionType::get(llvm::Type::getVoidTy(ctx->llvm_context_), false),
       llvm::Function::ExternalLinkage, "main", ctx->llvm_module_);
-  auto entry = llvm::BasicBlock::Create(ctx->llvm_context_, "entry", fun);
+  auto entry = llvm::BasicBlock::Create(ctx->llvm_context_, "entry", main_func);
   ctx->builder_.SetInsertPoint(entry);
 
   yyparse();
