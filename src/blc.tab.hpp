@@ -1,4 +1,4 @@
-/* A Bison parser, made by GNU Bison 3.4.2.  */
+/* A Bison parser, made by GNU Bison 3.4.1.  */
 
 /* Bison interface for Yacc-like parsers in C
 
@@ -51,14 +51,15 @@ extern int yydebug;
   {
     IDENTIFIER = 258,
     DOUBLE_NUM = 259,
-    EXPR = 260,
-    IF = 261,
-    ELSE = 262,
-    WHILE = 263,
-    GEQ = 264,
-    LEQ = 265,
-    EQ = 266,
-    NE = 267
+    DEFINE = 260,
+    EXPR = 261,
+    IF = 262,
+    ELSE = 263,
+    WHILE = 264,
+    GEQ = 265,
+    LEQ = 266,
+    EQ = 267,
+    NE = 268
   };
 #endif
 
@@ -74,9 +75,10 @@ union YYSTYPE
   StatementAST* statement;
   IdentifierAST* identifier;
 
+  std::list<IdentifierAST*>* parameters;
   std::list<AST*>* statements;
 
-#line 80 "blc.tab.hpp"
+#line 82 "blc.tab.hpp"
 
 };
 typedef union YYSTYPE YYSTYPE;

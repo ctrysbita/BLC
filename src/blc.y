@@ -17,11 +17,12 @@ extern AST* ast;
   StatementAST* statement;
   IdentifierAST* identifier;
 
+  std::list<IdentifierAST*>* parameters;
   std::list<AST*>* statements;
 }
 
 %token <value> IDENTIFIER DOUBLE_NUM
-%token EXPR IF ELSE WHILE
+%token DEFINE EXPR IF ELSE WHILE
 %right '='
 %left GEQ LEQ EQ NE
 %left '+' '-'
@@ -29,6 +30,7 @@ extern AST* ast;
 %nonassoc ';'
 
 %type <statement> statement
+%type <parameters> parameters
 %type <statements> statements
 %type <identifier> identifier
 %type <expression> expression
@@ -45,6 +47,7 @@ statement:
 ';' { $$ = new StatementAST(); }
 | '{' '}' { $$ = new StatementAST(); }
 | expression ';' { $<expression>$ = $1; }
+| DEFINE identifier '(' parameters ')' '{' statements '}' { $$ = new FunctionAST($2, $4, (new BlockAST())->WithChildren($7)); }
 | WHILE '(' expression ')' statement { $$ = new WhileAST($3, $5); }
 | IF '(' expression ')' statement optional_end { $$ = new IfAST($3, $5); }
 | IF '(' expression ')' statement ELSE statement { $$ = new IfAST($3, $5, $7); }
@@ -53,6 +56,12 @@ statement:
 
 optional_end:
 | ';'
+;
+
+parameters:
+ { $$ = new std::list<IdentifierAST*>(); }
+| identifier { $$ = new std::list<IdentifierAST*>(); $$->push_back($1); }
+| parameters ',' identifier { $1->push_back($3); }
 ;
 
 statements:

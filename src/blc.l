@@ -11,6 +11,7 @@ void yyerror(std::string);
 
 %%
 
+"define" return DEFINE;
 "expr" return EXPR;
 "if" return IF;
 "else" return ELSE;
@@ -19,7 +20,7 @@ void yyerror(std::string);
 [0-9]*\.[0-9]+|[0-9]+ { yylval.value = new std::string(yytext); return DOUBLE_NUM; }
 [_a-zA-Z][_a-zA-Z0-9]* { yylval.value = new std::string(yytext); return IDENTIFIER; }
 
-[-(){}<>=+*/%;] return *yytext;
+[-(){}<>=+*/%;,] return *yytext;
 
 ">=" return GEQ;
 "<=" return LEQ;

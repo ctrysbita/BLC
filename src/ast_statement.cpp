@@ -147,3 +147,19 @@ Value* WhileAST::GenIR(Context* context) {
 
   return Constant::getNullValue(Type::getInt32Ty(context->llvm_context_));
 }
+
+void FunctionAST::Execute(Context* context) {}
+
+nlohmann::json FunctionAST::JsonTree() {
+  std::list<nlohmann::json> parameters;
+  for (auto parameter : *parameters_)
+    parameters.push_back(parameter->JsonTree());
+
+  nlohmann::json json;
+  json["type"] = "Function";
+  json["parameters"] = parameters;
+  json["block"] = block_->JsonTree();
+  return json;
+}
+
+llvm::Value* FunctionAST::GenIR(Context* context) { return nullptr; }
