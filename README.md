@@ -435,6 +435,66 @@ void yyerror(std::string s) {
 
 The `yyerror()` function states to detect and report the error that might appear in the program.
 
+### Lexer
+
+The blc.l file is regarded as lexer in the process doing lexical analysis job. 
+
+```c++
+%{
+#include <string>
+#include <vector>
+#include "ast.h"
+#include "blc.tab.hpp"
+
+extern void OnEnd();
+
+void yyerror(std::string);
+%}
+```
+
+This part starting from `%{` and ended up with `%}` is a block whose contents will be put into the output `.c` file automatically. 
+
+```C++
+%%
+
+"expr" return EXPR;
+"if" return IF;
+"else" return ELSE;
+"while" return WHILE;
+
+[0-9]*\.[0-9]+|[0-9]+ { yylval.value = new std::string(yytext); return DOUBLE_NUM; }
+[_a-zA-Z][_a-zA-Z0-9]* { yylval.value = new std::string(yytext); return IDENTIFIER; }
+
+[-(){}<>=+*/%;] return *yytext;
+
+">=" return GEQ;
+"<=" return LEQ;
+"==" return EQ;
+"!=" return NE;
+
+[ \t\n]+ ;
+. yyerror("Lexical Error: Unknown character.");
+
+%%
+```
+
+In this part, two `%%`s mean that contents inside them are rules of how lexer would translate input codes to tokens. 
+
+This lexical analyzer would give `EXPR`, `IF`, `ELSE`, `WHILE`, `GEQ`, `LEQ`, `EQ` and `NE` token names to syntax analyzer if it detects "expr", “if”, “else”, “while”, “>=”, “<=”, “==” and “!=” respectively. 
+
+Besides, there are rules about regular expression. When the input string can be expressed by `[0-9]*\.[0-9]+|[0-9]+`, its token name would be `DOUBLE_NUM`. Similarly, expression `[_a-zA-Z][_a-zA-Z0-9]*` would have `IDENTIFIER` as its token name. Both of expressions will change their contents to string type and then store them as their token value. 
+
+Additionally, expression `[-(){}<>=+*/%;]` would directly return contents itself as token. When detects `[ \t\n]+` , it would do nothing. When detects all the other inputs, it would report error information. 
+
+```c++
+int yywrap() {
+  OnEnd();
+  return 1;
+}
+```
+
+When input is exhausted, the lexer will call function yywrap and return 1. 
+
 ### Traverse Abstract Syntax Tree
 
 After an AST is constructed, by traversing through AST, three kind of outputs can be generated.
