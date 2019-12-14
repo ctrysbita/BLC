@@ -4,6 +4,8 @@
 #include "ast.h"
 #include "blc.tab.hpp"
 
+extern void OnEnd();
+
 void yyerror(std::string);
 %}
 
@@ -30,5 +32,6 @@ void yyerror(std::string);
 %%
 
 int yywrap() {
+  OnEnd();
   return 1;
 }

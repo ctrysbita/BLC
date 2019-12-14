@@ -1,4 +1,4 @@
-/* A Bison parser, made by GNU Bison 3.4.1.  */
+/* A Bison parser, made by GNU Bison 3.4.2.  */
 
 /* Bison implementation for Yacc-like parsers in C
 
@@ -48,7 +48,7 @@
 #define YYBISON 1
 
 /* Bison version.  */
-#define YYBISON_VERSION "3.4.1"
+#define YYBISON_VERSION "3.4.2"
 
 /* Skeleton name.  */
 #define YYSKELETON_NAME "yacc.c"
@@ -695,7 +695,9 @@ yy_symbol_value_print (FILE *yyo, int yytype, YYSTYPE const * const yyvaluep)
   if (yytype < YYNTOKENS)
     YYPRINT (yyo, yytoknum[yytype], *yyvaluep);
 # endif
+  YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN
   YYUSE (yytype);
+  YY_IGNORE_MAYBE_UNINITIALIZED_END
 }
 
 
@@ -1296,173 +1298,173 @@ yyreduce:
   case 3:
 #line 41 "blc.y"
     { ast = (yyvsp[0].statement); OnParsed(); }
-#line 1300 "blc.tab.cpp"
+#line 1302 "blc.tab.cpp"
     break;
 
   case 4:
 #line 45 "blc.y"
     { (yyval.statement) = new StatementAST(); }
-#line 1306 "blc.tab.cpp"
+#line 1308 "blc.tab.cpp"
     break;
 
   case 5:
 #line 46 "blc.y"
     { (yyval.statement) = new StatementAST(); }
-#line 1312 "blc.tab.cpp"
+#line 1314 "blc.tab.cpp"
     break;
 
   case 6:
 #line 47 "blc.y"
     { (yyval.expression) = (yyvsp[-1].expression); }
-#line 1318 "blc.tab.cpp"
+#line 1320 "blc.tab.cpp"
     break;
 
   case 7:
 #line 48 "blc.y"
     { (yyval.statement) = new WhileAST((yyvsp[-2].expression), (yyvsp[0].statement)); }
-#line 1324 "blc.tab.cpp"
+#line 1326 "blc.tab.cpp"
     break;
 
   case 8:
 #line 49 "blc.y"
     { (yyval.statement) = new IfAST((yyvsp[-3].expression), (yyvsp[-1].statement)); }
-#line 1330 "blc.tab.cpp"
+#line 1332 "blc.tab.cpp"
     break;
 
   case 9:
 #line 50 "blc.y"
     { (yyval.statement) = new IfAST((yyvsp[-4].expression), (yyvsp[-2].statement), (yyvsp[0].statement)); }
-#line 1336 "blc.tab.cpp"
+#line 1338 "blc.tab.cpp"
     break;
 
   case 10:
 #line 51 "blc.y"
     { (yyval.statement) = (new BlockAST())->WithChildren((yyvsp[-1].statements)); }
-#line 1342 "blc.tab.cpp"
+#line 1344 "blc.tab.cpp"
     break;
 
   case 13:
 #line 59 "blc.y"
     { (yyval.statements) = new std::list<AST*>(); (yyval.statements)->push_back((yyvsp[0].statement)); }
-#line 1348 "blc.tab.cpp"
+#line 1350 "blc.tab.cpp"
     break;
 
   case 14:
 #line 60 "blc.y"
     { (yyvsp[-1].statements)->push_back((yyvsp[0].statement)); }
-#line 1354 "blc.tab.cpp"
+#line 1356 "blc.tab.cpp"
     break;
 
   case 15:
 #line 64 "blc.y"
     { (yyval.expression) = new DoubleAST((yyvsp[0].value)); }
-#line 1360 "blc.tab.cpp"
+#line 1362 "blc.tab.cpp"
     break;
 
   case 16:
 #line 65 "blc.y"
     { (yyval.expression) = (yyvsp[0].identifier); }
-#line 1366 "blc.tab.cpp"
+#line 1368 "blc.tab.cpp"
     break;
 
   case 17:
 #line 66 "blc.y"
     { (yyval.expression) = new VariableAssignmentAST((yyvsp[-2].identifier), (yyvsp[0].expression)); }
-#line 1372 "blc.tab.cpp"
+#line 1374 "blc.tab.cpp"
     break;
 
   case 18:
 #line 67 "blc.y"
     { (yyval.expression) = new ExpressionAssignmentAST((yyvsp[-2].identifier), (yyvsp[0].expression)); }
-#line 1378 "blc.tab.cpp"
+#line 1380 "blc.tab.cpp"
     break;
 
   case 19:
 #line 68 "blc.y"
     { (yyval.expression) = new BinaryOperationAST('-', new DoubleAST(0.0), (yyvsp[0].expression)); }
-#line 1384 "blc.tab.cpp"
+#line 1386 "blc.tab.cpp"
     break;
 
   case 20:
 #line 69 "blc.y"
     { (yyval.expression) = new BinaryOperationAST('+', (yyvsp[-2].expression), (yyvsp[0].expression)); }
-#line 1390 "blc.tab.cpp"
+#line 1392 "blc.tab.cpp"
     break;
 
   case 21:
 #line 70 "blc.y"
     { (yyval.expression) = new BinaryOperationAST('-', (yyvsp[-2].expression), (yyvsp[0].expression)); }
-#line 1396 "blc.tab.cpp"
+#line 1398 "blc.tab.cpp"
     break;
 
   case 22:
 #line 71 "blc.y"
     { (yyval.expression) = new BinaryOperationAST('*', (yyvsp[-2].expression), (yyvsp[0].expression)); }
-#line 1402 "blc.tab.cpp"
+#line 1404 "blc.tab.cpp"
     break;
 
   case 23:
 #line 72 "blc.y"
     { (yyval.expression) = new BinaryOperationAST('/', (yyvsp[-2].expression), (yyvsp[0].expression)); }
-#line 1408 "blc.tab.cpp"
+#line 1410 "blc.tab.cpp"
     break;
 
   case 24:
 #line 73 "blc.y"
     { (yyval.expression) = new BinaryOperationAST('%', (yyvsp[-2].expression), (yyvsp[0].expression)); }
-#line 1414 "blc.tab.cpp"
+#line 1416 "blc.tab.cpp"
     break;
 
   case 25:
 #line 74 "blc.y"
     { (yyval.expression) = new BinaryOperationAST('<', (yyvsp[-2].expression), (yyvsp[0].expression)); }
-#line 1420 "blc.tab.cpp"
+#line 1422 "blc.tab.cpp"
     break;
 
   case 26:
 #line 75 "blc.y"
     { (yyval.expression) = new BinaryOperationAST('>', (yyvsp[-2].expression), (yyvsp[0].expression)); }
-#line 1426 "blc.tab.cpp"
+#line 1428 "blc.tab.cpp"
     break;
 
   case 27:
 #line 76 "blc.y"
     { (yyval.expression) = new BinaryOperationAST(GEQ, (yyvsp[-2].expression), (yyvsp[0].expression)); }
-#line 1432 "blc.tab.cpp"
+#line 1434 "blc.tab.cpp"
     break;
 
   case 28:
 #line 77 "blc.y"
     { (yyval.expression) = new BinaryOperationAST(LEQ, (yyvsp[-2].expression), (yyvsp[0].expression)); }
-#line 1438 "blc.tab.cpp"
+#line 1440 "blc.tab.cpp"
     break;
 
   case 29:
 #line 78 "blc.y"
     { (yyval.expression) = new BinaryOperationAST(NE, (yyvsp[-2].expression), (yyvsp[0].expression)); }
-#line 1444 "blc.tab.cpp"
+#line 1446 "blc.tab.cpp"
     break;
 
   case 30:
 #line 79 "blc.y"
     { (yyval.expression) = new BinaryOperationAST(EQ, (yyvsp[-2].expression), (yyvsp[0].expression)); }
-#line 1450 "blc.tab.cpp"
+#line 1452 "blc.tab.cpp"
     break;
 
   case 31:
 #line 80 "blc.y"
     { (yyval.expression) = (yyvsp[-1].expression); }
-#line 1456 "blc.tab.cpp"
+#line 1458 "blc.tab.cpp"
     break;
 
   case 32:
 #line 84 "blc.y"
     { (yyval.identifier) = new IdentifierAST((yyvsp[0].value)); }
-#line 1462 "blc.tab.cpp"
+#line 1464 "blc.tab.cpp"
     break;
 
 
-#line 1466 "blc.tab.cpp"
+#line 1468 "blc.tab.cpp"
 
       default: break;
     }

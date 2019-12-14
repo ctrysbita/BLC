@@ -1,6 +1,6 @@
-#line 2 "blc.yy.cpp"
+#line 1 "blc.yy.cpp"
 
-#line 4 "blc.yy.cpp"
+#line 3 "blc.yy.cpp"
 
 #define  YY_INT_ALIGNED short int
 
@@ -469,9 +469,11 @@ char *yytext;
 #include "ast.h"
 #include "blc.tab.hpp"
 
+extern void OnEnd();
+
 void yyerror(std::string);
-#line 474 "blc.yy.cpp"
 #line 475 "blc.yy.cpp"
+#line 476 "blc.yy.cpp"
 
 #define INITIAL 0
 
@@ -688,10 +690,10 @@ YY_DECL
 		}
 
 	{
-#line 10 "blc.l"
+#line 12 "blc.l"
 
 
-#line 695 "blc.yy.cpp"
+#line 696 "blc.yy.cpp"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -750,76 +752,76 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 12 "blc.l"
+#line 14 "blc.l"
 return EXPR;
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 13 "blc.l"
+#line 15 "blc.l"
 return IF;
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 14 "blc.l"
+#line 16 "blc.l"
 return ELSE;
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 15 "blc.l"
+#line 17 "blc.l"
 return WHILE;
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 17 "blc.l"
+#line 19 "blc.l"
 { yylval.value = new std::string(yytext); return DOUBLE_NUM; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 18 "blc.l"
+#line 20 "blc.l"
 { yylval.value = new std::string(yytext); return IDENTIFIER; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 20 "blc.l"
+#line 22 "blc.l"
 return *yytext;
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 22 "blc.l"
+#line 24 "blc.l"
 return GEQ;
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 23 "blc.l"
+#line 25 "blc.l"
 return LEQ;
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 24 "blc.l"
+#line 26 "blc.l"
 return EQ;
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 25 "blc.l"
+#line 27 "blc.l"
 return NE;
 	YY_BREAK
 case 12:
 /* rule 12 can match eol */
 YY_RULE_SETUP
-#line 27 "blc.l"
+#line 29 "blc.l"
 ;
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 28 "blc.l"
+#line 30 "blc.l"
 yyerror("Lexical Error: Unknown character.");
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 30 "blc.l"
+#line 32 "blc.l"
 ECHO;
 	YY_BREAK
-#line 823 "blc.yy.cpp"
+#line 824 "blc.yy.cpp"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1824,9 +1826,10 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 30 "blc.l"
+#line 32 "blc.l"
 
 
 int yywrap() {
+  OnEnd();
   return 1;
 }
