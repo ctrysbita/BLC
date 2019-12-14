@@ -1,5 +1,6 @@
 #include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/Type.h>
+#include <cmath>
 #include <iostream>
 #include <string>
 #include "ast.h"
@@ -38,6 +39,8 @@ double BinaryOperationAST::Evaluate(Context* context) {
       return lhs * rhs;
     case '/':
       return lhs / rhs;
+    case '%':
+      return fmod(lhs, rhs);
     case '>':
       return lhs > rhs;
     case '<':
@@ -85,25 +88,27 @@ Value* BinaryOperationAST::GenIR(Context* context) {
 
   switch (type_) {
     case '+':
-      return context->builder_.CreateFAdd(lhs, rhs, "tmp");
+      return context->builder_.CreateFAdd(lhs, rhs);
     case '-':
-      return context->builder_.CreateFSub(lhs, rhs, "tmp");
+      return context->builder_.CreateFSub(lhs, rhs);
     case '*':
-      return context->builder_.CreateFMul(lhs, rhs, "tmp");
+      return context->builder_.CreateFMul(lhs, rhs);
     case '/':
-      return context->builder_.CreateFDiv(lhs, rhs, "tmp");
+      return context->builder_.CreateFDiv(lhs, rhs);
+    case '%':
+      return context->builder_.CreateFRem(lhs, rhs);
     case '>':
-      return context->builder_.CreateFCmpOGT(lhs, rhs, "tmp");
+      return context->builder_.CreateFCmpOGT(lhs, rhs);
     case '<':
-      return context->builder_.CreateFCmpOLT(lhs, rhs, "tmp");
+      return context->builder_.CreateFCmpOLT(lhs, rhs);
     case GEQ:
-      return context->builder_.CreateFCmpOGE(lhs, rhs, "tmp");
+      return context->builder_.CreateFCmpOGE(lhs, rhs);
     case LEQ:
-      return context->builder_.CreateFCmpOLE(lhs, rhs, "tmp");
+      return context->builder_.CreateFCmpOLE(lhs, rhs);
     case EQ:
-      return context->builder_.CreateFCmpOEQ(lhs, rhs, "tmp");
+      return context->builder_.CreateFCmpOEQ(lhs, rhs);
     case NE:
-      return context->builder_.CreateFCmpONE(lhs, rhs, "tmp");
+      return context->builder_.CreateFCmpONE(lhs, rhs);
     default:
       return nullptr;
   }

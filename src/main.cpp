@@ -25,16 +25,14 @@ void OnParsed() {
   delete ast;
 }
 
-int main() {
+int main(int argc, char* argv[]) {
   // Create a main function for interactive mode.
   ctx->blocks_.push_back(new BlockAST());
-  std::vector<llvm::Type*> args;
-  auto FT =
-      llvm::FunctionType::get(llvm::Type::getVoidTy(ctx->llvm_context_), false);
-  auto fun = llvm::Function::Create(FT, llvm::Function::ExternalLinkage, "main",
-                                    ctx->llvm_module_);
-  auto bb = llvm::BasicBlock::Create(ctx->llvm_context_, "entry", fun);
-  ctx->builder_.SetInsertPoint(bb);
+  auto fun = llvm::Function::Create(
+      llvm::FunctionType::get(llvm::Type::getVoidTy(ctx->llvm_context_), false),
+      llvm::Function::ExternalLinkage, "main", ctx->llvm_module_);
+  auto entry = llvm::BasicBlock::Create(ctx->llvm_context_, "entry", fun);
+  ctx->builder_.SetInsertPoint(entry);
 
   yyparse();
   return 0;

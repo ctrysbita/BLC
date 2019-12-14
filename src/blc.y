@@ -38,7 +38,7 @@ extern AST* ast;
 %%
 
 program:
-|program statement { ast = $2; OnParsed(); }
+| program statement { ast = $2; OnParsed(); }
 ;
 
 statement:
@@ -70,6 +70,7 @@ DOUBLE_NUM { $$ = new DoubleAST($1); }
 | expression '-' expression { $$ = new BinaryOperationAST('-', $1, $3); }
 | expression '*' expression { $$ = new BinaryOperationAST('*', $1, $3); }
 | expression '/' expression { $$ = new BinaryOperationAST('/', $1, $3); }
+| expression '%' expression { $$ = new BinaryOperationAST('%', $1, $3); }
 | expression '<' expression { $$ = new BinaryOperationAST('<', $1, $3); }
 | expression '>' expression { $$ = new BinaryOperationAST('>', $1, $3); }
 | expression GEQ expression { $$ = new BinaryOperationAST(GEQ, $1, $3); }
