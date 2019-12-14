@@ -89,7 +89,7 @@ Value* IfAST::GenIR(Context* context) {
   if (else_) {
     func->getBasicBlockList().push_back(else_block);
     context->builder_.SetInsertPoint(else_block);
-    then_->GenIR(context);
+    else_->GenIR(context);
     context->builder_.CreateBr(after);
   }
 
