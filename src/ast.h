@@ -90,6 +90,7 @@ class ExpressionAST : public AST {
    * @brief Evaluate expression and print result.
    *
    * @param context Context that store associated information.
+   * @return double Evaluated value.
    */
   virtual double Run(Context* context) final override;
 

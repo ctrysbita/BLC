@@ -38,11 +38,11 @@ nlohmann::json BlockAST::JsonTree() {
 Value* BlockAST::GenIR(Context* context) {
   context->blocks_.push_back(this);
 
-  for (auto child : children_) child->GenIR(context);
+  Value* ret;
+  for (auto child : children_) ret = child->GenIR(context);
 
   context->blocks_.pop_back();
-  // TODO: Ret
-  return nullptr;
+  return ret;
 };
 
 void IfAST::Execute(Context* context) {
@@ -173,13 +173,16 @@ llvm::Value* FunctionAST::GenIR(Context* context) {
   auto previous_block = context->builder_.GetInsertBlock();
   auto previous_point = context->builder_.GetInsertPoint();
   auto previous_block_stack = context->blocks_;
+  context->blocks_.clear();
+  context->blocks_.push_back(new BlockAST());
 
   // Determine arguments type. Currently only double is available.
   std::vector<Type*> args(arguments_->size(),
-                          Type::getDoubleTy(context->llvm_context_));
+                          Type::getFloatTy(context->llvm_context_));
 
+  // Create Function.
   auto func = llvm::Function::Create(
-      llvm::FunctionType::get(llvm::Type::getDoubleTy(context->llvm_context_),
+      llvm::FunctionType::get(llvm::Type::getFloatTy(context->llvm_context_),
                               args, false),
       llvm::Function::ExternalLinkage, name_->get_name(),
       context->llvm_module_);
@@ -187,10 +190,25 @@ llvm::Value* FunctionAST::GenIR(Context* context) {
   auto entry = llvm::BasicBlock::Create(context->llvm_context_, "entry", func);
   context->builder_.SetInsertPoint(entry);
 
-  context->blocks_.clear();
-  block_->GenIR(context);
+  // Set up arguments.
+  size_t i = 0;
+  for (auto& arg : func->args()) {
+    arg.setName((*arguments_)[i]->get_name());
+    auto instruction =
+        context->builder_.CreateAlloca(Type::getFloatTy(context->llvm_context_),
+                                       nullptr, (*arguments_)[i]->get_name());
+    context->builder_.CreateStore(&arg, instruction, false);
+    context->blocks_.back()->set_llvm_symbol((*arguments_)[i]->get_name(),
+                                             instruction);
+    ++i;
+  }
+
+  // Generate function body.
+  auto ret = block_->GenIR(context);
+  context->builder_.CreateRet(ret);
 
   // Resotre previous insertion point and block stack.
+  delete context->blocks_.front();
   context->builder_.SetInsertPoint(previous_block, previous_point);
   context->blocks_ = previous_block_stack;
   return nullptr;
