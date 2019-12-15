@@ -84,13 +84,19 @@ export PATH=/usr/local/Cellar/bison/3.4.2/bin:/usr/local/Cellar/flex/2.6.4_1/bin
 
 Note that the new added paths should come before the old PATH variable, so that the shell will find the newer version instead of the old one.
 
-At last, LLVM library needs to be installed by homebrew. Enter the command,
+Also, the project needs the LLVM library, which can be installed using homebrew as well. Enter the command,
 
 ```bash
 brew install llvm
 ```
 
 Since the installation process involves the compilation of LLVM source code, it may take a long time. After installation is finished, LLVM is now installed at /usr/local/Cellar/llvm. Since llvm-config utility is needed when compiling our program, you may want to add `/usr/local/Cellar/llvm/9.0.0_1/bin` to the PATH variable as well (the path may vary).
+
+At last, users need to install `make` to compile the code of the project. 
+
+```bash
+brew install make
+```
 
 
 ## Code Explanation
@@ -609,7 +615,52 @@ In the function, the `JsonTree` method of the root node will be called, which wi
 
 #### Intermediate Representation
 
+## The integration of code and compilation guide
 
+The file structure of our project is as follows. 
+
+```bash
+.
+├── LICENSE.md
+├── README.md
+├── blc.sln
+├── blc.vcxproj
+├── blc.vcxproj.filters
+├── blc.vcxproj.user
+├── src
+│   ├── Makefile
+│   ├── ast.h
+│   ├── ast_expression.cpp
+│   ├── ast_statement.cpp
+│   ├── blc.l
+│   ├── blc.y
+│   ├── context.hpp
+│   └── main.cpp
+└── third_party
+    └── nlohmann
+        └── json.hpp
+
+3 directories, 15 files
+```
+
+Source code of the calculator project is stored in `src` directory. The file `ast.h` contains all the declarations of the abstract syntax tree classes, and the implementation of class methods are in `ast_expression.cpp` and `ast_statement.cpp`. `blc.l` and `blc.y` contains the code of lexer and syntax analyzer respectively. `Context` class is implemented in `context.hpp`, and `main.cpp` contains the `main` function and `OnParsed`. `Makefile` is the input file of `make`, which is used to compile the code. 
+
+The root directory of the project contains the Visual Studio project file as well as readme and lincense documents. `third_party` directory contains code of third_party libraries the project used. 
+
+### Compile for macOS & Linux
+
+If users followed the installation guide previously in the report, they should be able to compile the code now. First go to the `src` directory, then enter the command below. 
+
+```bash
+make all
+```
+
+After the command is finished, a file named `main` will be generated, which is the resulting program after compilation. Users can now run the `main` program and try out the functions of the calculator. 
+
+```bash
+./main
+[IN]<-
+```
 
 ## Recommandation of Better Generators
 
