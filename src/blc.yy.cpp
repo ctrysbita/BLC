@@ -1,6 +1,6 @@
-#line 2 "blc.yy.cpp"
+#line 1 "blc.yy.cpp"
 
-#line 4 "blc.yy.cpp"
+#line 3 "blc.yy.cpp"
 
 #define  YY_INT_ALIGNED short int
 
@@ -477,8 +477,8 @@ char *yytext;
 extern void OnEnd();
 
 void yyerror(std::string);
+#line 480 "blc.yy.cpp"
 #line 481 "blc.yy.cpp"
-#line 482 "blc.yy.cpp"
 
 #define INITIAL 0
 
@@ -698,7 +698,7 @@ YY_DECL
 #line 12 "blc.l"
 
 
-#line 702 "blc.yy.cpp"
+#line 701 "blc.yy.cpp"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -831,7 +831,7 @@ YY_RULE_SETUP
 #line 33 "blc.l"
 ECHO;
 	YY_BREAK
-#line 835 "blc.yy.cpp"
+#line 834 "blc.yy.cpp"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 

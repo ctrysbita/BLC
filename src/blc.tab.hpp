@@ -1,4 +1,4 @@
-/* A Bison parser, made by GNU Bison 3.4.1.  */
+/* A Bison parser, made by GNU Bison 3.4.2.  */
 
 /* Bison interface for Yacc-like parsers in C
 
@@ -75,10 +75,11 @@ union YYSTYPE
   StatementAST* statement;
   IdentifierAST* identifier;
 
-  std::list<IdentifierAST*>* parameters;
   std::list<AST*>* statements;
+  std::vector<IdentifierAST*>* arguments;
+  std::vector<ExpressionAST*>* call_args;
 
-#line 82 "blc.tab.hpp"
+#line 83 "blc.tab.hpp"
 
 };
 typedef union YYSTYPE YYSTYPE;

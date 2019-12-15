@@ -158,13 +158,12 @@ void FunctionAST::Execute(Context* context) {
 }
 
 nlohmann::json FunctionAST::JsonTree() {
-  std::list<nlohmann::json> parameters;
-  for (auto parameter : *arguments_)
-    parameters.push_back(parameter->JsonTree());
+  std::list<nlohmann::json> arguments;
+  for (auto argument : *arguments_) arguments.push_back(argument->JsonTree());
 
   nlohmann::json json;
   json["type"] = "Function";
-  json["parameters"] = parameters;
+  json["arguments"] = arguments;
   json["block"] = block_->JsonTree();
   return json;
 }

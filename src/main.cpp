@@ -25,7 +25,7 @@ void OnParsed() {
   ctx->llvm_module_.print(ofs, nullptr);
   std::cout << "Generated LLVM IR:" << std::endl << ir_string << std::endl;
 
-  delete ast;
+  if (!dynamic_cast<FunctionAST*>(ast)) delete ast;
 }
 
 void OnEnd() {

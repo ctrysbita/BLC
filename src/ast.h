@@ -316,14 +316,28 @@ class ExpressionAssignmentAST : public ExpressionAST {
   virtual nlohmann::json JsonTree() override;
 };
 
+class FunctionCallAST : public ExpressionAST {
+ private:
+  IdentifierAST* name_;
+  std::vector<ExpressionAST*>* arguments_;
+
+ public:
+  FunctionCallAST(IdentifierAST* name, std::vector<ExpressionAST*>* arguments)
+      : name_(name), arguments_(arguments) {}
+  ~FunctionCallAST() {}
+
+  virtual double Evaluate(Context* context) override;
+  virtual nlohmann::json JsonTree() override;
+};
+
 class FunctionAST : public StatementAST {
  private:
   IdentifierAST* name_;
-  std::list<IdentifierAST*>* arguments_;
+  std::vector<IdentifierAST*>* arguments_;
   BlockAST* block_;
 
  public:
-  FunctionAST(IdentifierAST* name, std::list<IdentifierAST*>* parameters,
+  FunctionAST(IdentifierAST* name, std::vector<IdentifierAST*>* parameters,
               BlockAST* block)
       : name_(name), arguments_(parameters), block_(block) {}
   ~FunctionAST() {
@@ -336,4 +350,6 @@ class FunctionAST : public StatementAST {
   virtual void Execute(Context* context) override;
   virtual nlohmann::json JsonTree() override;
   virtual llvm::Value* GenIR(Context* context) override;
+
+  friend class FunctionCallAST;
 };
