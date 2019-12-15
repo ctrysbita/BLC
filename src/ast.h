@@ -29,8 +29,10 @@ class AST {
    * @brief A general interface for statements and expressions to run.
    *
    * @param context Context that store associated information.
+   * @return double Return value. 0 for statements and evaluated value for
+   * expressions.
    */
-  virtual void Run(Context* context) = 0;
+  virtual double Run(Context* context) = 0;
 
   /**
    * @brief Generate LLVM IR for current AST.
@@ -55,8 +57,12 @@ class StatementAST : public AST {
    * @brief Execute statement.
    *
    * @param context Context that store associated information.
+   * @return double Return 0 if successful executed.
    */
-  virtual void Run(Context* context) final override { Execute(context); };
+  virtual double Run(Context* context) final override {
+    Execute(context);
+    return 0;
+  };
 
   /**
    * @brief Execute current statement.
@@ -85,7 +91,7 @@ class ExpressionAST : public AST {
    *
    * @param context Context that store associated information.
    */
-  virtual void Run(Context* context) final override;
+  virtual double Run(Context* context) final override;
 
   /**
    * @brief Evaluate current expression.

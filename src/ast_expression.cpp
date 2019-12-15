@@ -6,11 +6,14 @@
 #include "ast.h"
 #include "blc.tab.hpp"
 
+extern std::map<std::string, FunctionAST*> functions;
+
 using namespace llvm;
 
-void ExpressionAST::Run(Context* context) {
+double ExpressionAST::Run(Context* context) {
   auto result = Evaluate(context);
   std::cout << "=> " << result << std::endl;
+  return result;
 };
 
 double DoubleAST::Evaluate(Context* context) { return value_; }

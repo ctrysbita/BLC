@@ -18,7 +18,8 @@ void BlockAST::Execute(Context* context) {
   context->blocks_.push_back(this);
 
   // Execute all statements in current block.
-  for (auto ast : children_) ast->Run(context);
+  for (auto ast : children_)
+    context->blocks_.front()->set_symbol("$ret", ast->Run(context));
 
   // Back to upper block.
   context->blocks_.pop_back();
