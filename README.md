@@ -495,7 +495,7 @@ int yywrap() {
 
 When input is exhausted, the lexer will call function yywrap and return 1. 
 
-### Traverse Abstract Syntax Tree
+### Abstract Syntax Tree Traverser
 
 After an AST is constructed, by traversing through AST, three kind of outputs can be generated.
 
@@ -521,9 +521,108 @@ class Context {
 
 The `llvm_context_`, `llvm_module_` and `builder_` store context of constructing LLVM IR. Since BLC has interactive mode which interpret each line of code immediately, all generated IR codes are contained in a singl function (main) in a single module (blc). `blocks_` is the block stack that used to isolate symbol table for nested blcoks.
 
+The following of this part will explain three traversers one by one. 
+
 #### Interpreter
 
+In the `ast_expression.cpp` file, the method `Evaluate()` shows how the interpreter works. Meanwhile, in the `ast_statement.cpp` , the method `Execute()` has the same function.
+
+```c++
+double DoubleAST::Evaluate(Context* context) { return value_; }
+
+double BinaryOperationAST::Evaluate(Context* context) {
+  auto lhs = lhs_->Evaluate(context);
+  auto rhs = rhs_->Evaluate(context);
+
+  switch (type_) {
+    case '+':
+      return lhs + rhs;
+    case '-':
+      return lhs - rhs;
+    case '*':
+      return lhs * rhs;
+    case '/':
+      return lhs / rhs;
+    case '%':
+      return fmod(lhs, rhs);
+    case '>':
+      return lhs > rhs;
+    case '<':
+      return lhs < rhs;
+    case GEQ:
+      return lhs >= rhs;
+    case LEQ:
+      return lhs <= rhs;
+    case EQ:
+      return lhs == rhs;
+    case NE:
+      return lhs != rhs;
+    default:
+      return 0;
+  }
+}
+```
+
+In the `ast_expression.cpp` file, it shows that how a interpreter returns a double number or an identifier, presents the binary operations, variable assignment and expression assignment. Take binary operation as an example, the method `Evaluate()` evaluate the result while reading the input, and finally return the result.
+
+```c++
+void WhileAST::Execute(Context* context) {
+  while (condition_->Evaluate(context)) statement_->Run(context);
+}
+```
+
+The `Execute()` method, which is objected to `statement` , also has the similiar features as `Evaluate()` method. Take `Execute()` in `WhileAST`  as an example, it first uses `Evaluate()`  to check the condition, then uses `Run()` to execute the statement, and eventually return the  result.
+
 #### JSON Tree
+
+This traverser creates a JSON tree and prints it. JSON is a data format consisting of key-value pairs and array types. Take `DoubleAST` as an example, the code of JSON tree traverser is as follows. 
+
+```c++
+nlohmann::json DoubleAST::JsonTree() {
+  nlohmann::json json;
+  json["type"] = "double";
+  json["value"] = value_;
+  return json;
+}
+```
+
+The code shows how JSON representation for a leaf node of the syntax tree is constructed. First an object of `nlohmann::json` is constructed.  `nlohmann::json` is the library used to generate JSON objects in C++. `json["type"] = "double";` means adding the key-value pair `"type": "double"` to the json object. This method adds the type and value of the node to the JSON object and returns it as the JSON representation of this node. 
+
+For non-leaf nodes of the syntax tree, the JSON representations of children of the nodes are added as a value of the children key-pair. Take `BinaryOperationAST` as an example. 
+
+```c++
+nlohmann::json BinaryOperationAST::JsonTree() {
+  nlohmann::json json;
+  json["type"] = "BinaryOperation";
+  json["lhs"] = lhs_->JsonTree();
+  json["rhs"] = rhs_->JsonTree();
+  switch (type_) {
+    case GEQ:
+      json["operationType"] = ">=";
+      break;
+    ......
+  }
+  return json;
+}
+```
+
+The "lhs" and "rhs" key-value pairs are the one that contains children nodes. The `JsonTree` method of children are called to generate their JSON representation, and their returned JSON object are directly assigned to the corresponding key. In this way, a hierachy of nodes are created. 
+
+After a complete syntax tree is created, the `OnParsed` function will be called. 
+
+```c++
+void OnParsed() {
+  if (!ast) return;
+  ...
+  // JsonTree
+  std::cout << "Parsed Syntax Tree:" << std::endl
+            << ast->JsonTree().dump(4) << std::endl;
+  ...
+  delete ast;
+}
+```
+
+In the function, the `JsonTree` method of the root node will be called, which will treverse the whole tree and return the JSON object of it. The JSON object is then dumped to string with indentation of 4 spaces, which will be output to the screen. 
 
 #### Intermediate Representation
 

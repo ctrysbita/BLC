@@ -26,6 +26,7 @@ void OnParsed() {
   std::cout << "Generated LLVM IR:" << std::endl << ir_string << std::endl;
 
   if (!dynamic_cast<FunctionAST*>(ast)) delete ast;
+  std::cout << "[IN]<-";
 }
 
 void OnEnd() {
@@ -45,6 +46,8 @@ int main(int argc, char* argv[]) {
       llvm::Function::ExternalLinkage, "main", ctx->llvm_module_);
   auto entry = llvm::BasicBlock::Create(ctx->llvm_context_, "entry", main_func);
   ctx->builder_.SetInsertPoint(entry);
+
+  std::cout << "[IN]<-";
 
   yyparse();
   return 0;
