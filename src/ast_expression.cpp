@@ -133,7 +133,7 @@ double IdentifierAST::Evaluate(Context* context) {
     }
   }
 
-  std::cout << "Warning: Use of undefined variable." << std::endl;
+  std::cerr << "Warning: Use of undefined variable." << std::endl;
   return 0;
 }
 
@@ -152,7 +152,7 @@ llvm::Value* IdentifierAST::GenIR(Context* context) {
     if (symbol) return context->builder_.CreateLoad(symbol, false, "");
   }
 
-  std::cout << "Error: Use of undefined variable." << std::endl;
+  std::cerr << "Error: Use of undefined variable." << std::endl;
   return nullptr;
 }
 

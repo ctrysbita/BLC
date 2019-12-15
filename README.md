@@ -96,7 +96,7 @@ brew install llvm
 
 Since the installation process involves the compilation of LLVM source code, it may take a long time. After installation is finished, LLVM is now installed at /usr/local/Cellar/llvm. Since llvm-config utility is needed when compiling our program, you may want to add `/usr/local/Cellar/llvm/9.0.0_1/bin` to the PATH variable as well (the path may vary).
 
-At last, users need to install `make` to compile the code of the project. 
+At last, users need to install `make` to compile the code of the project.
 
 ```bash
 brew install make
@@ -350,7 +350,7 @@ extern AST* ast;
 
 ```
 
-Firstly, the code includes the head file `ast.h` , and defines the extern functions `yylex()` , `yyerror()` , `OnParsed()`  and the extern pointer `ast`  at the beginning. 
+Firstly, the code includes the head file `ast.h` , and defines the extern functions `yylex()` , `yyerror()` , `OnParsed()`  and the extern pointer `ast`  at the beginning.
 
 ```c++
 %union {
@@ -380,7 +380,7 @@ Firstly, the code includes the head file `ast.h` , and defines the extern functi
 %%
 ```
 
-Secondly, the types that might be used are defined in `union` . Following the union, `IDENTIFIER` , `DOUBLE_NUM` , `EXPR` , `IF` , and `WHILE`  are defined as token, meanwhile, `IDENTIFIER`  and `DOUBLE_NUM` are defined to have type of `value` . The associativity of the operands are also defined as followed. Lastly, the types of the non-terminals are defined separately to be in different types. 
+Secondly, the types that might be used are defined in `union` . Following the union, `IDENTIFIER` , `DOUBLE_NUM` , `EXPR` , `IF` , and `WHILE`  are defined as token, meanwhile, `IDENTIFIER`  and `DOUBLE_NUM` are defined to have type of `value` . The associativity of the operands are also defined as followed. Lastly, the types of the non-terminals are defined separately to be in different types.
 
 ```c++
 program:
@@ -402,7 +402,7 @@ statement { $$ = new std::list<AST*>(); $$->push_back($1); }
 ;
 ```
 
-The parsing starts with `program`  and  `statement` first define that any `expression`  in this grammar should be end with the semicolon. And then the productions define the grammar of the IF statement, While statement and the block statement. Meanwhile, the productions of `statements`  define that `statements`  are either consists of a set of `statement`  or a single `statement` . 
+The parsing starts with `program`  and  `statement` first define that any `expression`  in this grammar should be end with the semicolon. And then the productions define the grammar of the IF statement, While statement and the block statement. Meanwhile, the productions of `statements`  define that `statements`  are either consists of a set of `statement`  or a single `statement` .
 
 ```c++
 expression:
@@ -425,7 +425,7 @@ DOUBLE_NUM { $$ = new DoubleAST($1); }
 ;
 ```
 
-The productions of `expression` define that `expression`  can be a single double-type number or a single identifier. Meanwhile, it could also state the value assignment, arithmetic operations, including negation, addition, subtraction, multiplication and division, and comparison between two double-type numbers. 
+The productions of `expression` define that `expression`  can be a single double-type number or a single identifier. Meanwhile, it could also state the value assignment, arithmetic operations, including negation, addition, subtraction, multiplication and division, and comparison between two double-type numbers.
 
 ```c++
 identifier:
@@ -447,7 +447,7 @@ The `yyerror()` function states to detect and report the error that might appear
 
 ### Lexer
 
-The blc.l file is regarded as lexer in the process doing lexical analysis job. 
+The blc.l file is regarded as lexer in the process doing lexical analysis job.
 
 ```c++
 %{
@@ -462,7 +462,7 @@ void yyerror(std::string);
 %}
 ```
 
-This part starting from `%{` and ended up with `%}` is a block whose contents will be put into the output `.c` file automatically. 
+This part starting from `%{` and ended up with `%}` is a block whose contents will be put into the output `.c` file automatically.
 
 ```C++
 %%
@@ -488,13 +488,13 @@ This part starting from `%{` and ended up with `%}` is a block whose contents wi
 %%
 ```
 
-In this part, two `%%`s mean that contents inside them are rules of how lexer would translate input codes to tokens. 
+In this part, two `%%`s mean that contents inside them are rules of how lexer would translate input codes to tokens.
 
-This lexical analyzer would give `EXPR`, `IF`, `ELSE`, `WHILE`, `GEQ`, `LEQ`, `EQ` and `NE` token names to syntax analyzer if it detects "expr", “if”, “else”, “while”, “>=”, “<=”, “==” and “!=” respectively. 
+This lexical analyzer would give `EXPR`, `IF`, `ELSE`, `WHILE`, `GEQ`, `LEQ`, `EQ` and `NE` token names to syntax analyzer if it detects "expr", “if”, “else”, “while”, “>=”, “<=”, “==” and “!=” respectively.
 
-Besides, there are rules about regular expression. When the input string can be expressed by `[0-9]*\.[0-9]+|[0-9]+`, its token name would be `DOUBLE_NUM`. Similarly, expression `[_a-zA-Z][_a-zA-Z0-9]*` would have `IDENTIFIER` as its token name. Both of expressions will change their contents to string type and then store them as their token value. 
+Besides, there are rules about regular expression. When the input string can be expressed by `[0-9]*\.[0-9]+|[0-9]+`, its token name would be `DOUBLE_NUM`. Similarly, expression `[_a-zA-Z][_a-zA-Z0-9]*` would have `IDENTIFIER` as its token name. Both of expressions will change their contents to string type and then store them as their token value.
 
-Additionally, expression `[-(){}<>=+*/%;]` would directly return contents itself as token. When detects `[ \t\n]+` , it would do nothing. When detects all the other inputs, it would report error information. 
+Additionally, expression `[-(){}<>=+*/%;]` would directly return contents itself as token. When detects `[ \t\n]+` , it would do nothing. When detects all the other inputs, it would report error information.
 
 ```c++
 int yywrap() {
@@ -503,7 +503,7 @@ int yywrap() {
 }
 ```
 
-When input is exhausted, the lexer will call function yywrap and return 1. 
+When input is exhausted, the lexer will call function yywrap and return 1.
 
 ### Abstract Syntax Tree Traverser
 
@@ -531,7 +531,7 @@ class Context {
 
 The `llvm_context_`, `llvm_module_` and `builder_` store context of constructing LLVM IR. Since BLC has interactive mode which interpret each line of code immediately, all generated IR codes are contained in a singl function (main) in a single module (blc). `blocks_` is the block stack that used to isolate symbol table for nested blcoks.
 
-The following of this part will explain three traversers one by one. 
+The following of this part will explain three traversers one by one.
 
 #### Interpreter
 
@@ -564,11 +564,11 @@ void WhileAST::Execute(Context* context) {
 }
 ```
 
-The `Execute()` method, which is objected to `statement` , also has the similiar features as `Evaluate()` method. Take `Execute()` in `WhileAST`  as an example, it first uses `Evaluate()`  to check the condition, then uses `Run()` to execute the statement, and eventually return the  result.
+The `Execute()` method, which is objected to `statement` , also has the similiar features as `Evaluate()` method. Take `Execute()` in `WhileAST`  as an example, it first uses `Evaluate()` to check the condition, then uses `Run()` to execute the statement, and eventually return the result.
 
 #### JSON Tree
 
-This traverser creates a JSON tree and prints it. JSON is a data format consisting of key-value pairs and array types. Take `DoubleAST` as an example, the code of JSON tree traverser is as follows. 
+This traverser creates a JSON tree and prints it. JSON is a data format consisting of key-value pairs and array types. Take `DoubleAST` as an example, the code of JSON tree traverser is as follows.
 
 ```c++
 nlohmann::json DoubleAST::JsonTree() {
@@ -579,9 +579,9 @@ nlohmann::json DoubleAST::JsonTree() {
 }
 ```
 
-The code shows how JSON representation for a leaf node of the syntax tree is constructed. First an object of `nlohmann::json` is constructed.  `nlohmann::json` is the library used to generate JSON objects in C++. `json["type"] = "double";` means adding the key-value pair `"type": "double"` to the json object. This method adds the type and value of the node to the JSON object and returns it as the JSON representation of this node. 
+The code shows how JSON representation for a leaf node of the syntax tree is constructed. First an object of `nlohmann::json` is constructed.  `nlohmann::json` is the library used to generate JSON objects in C++. `json["type"] = "double";` means adding the key-value pair `"type": "double"` to the json object. This method adds the type and value of the node to the JSON object and returns it as the JSON representation of this node.
 
-For non-leaf nodes of the syntax tree, the JSON representations of children of the nodes are added as a value of the children key-pair. Take `BinaryOperationAST` as an example. 
+For non-leaf nodes of the syntax tree, the JSON representations of children of the nodes are added as a value of the children key-pair. Take `BinaryOperationAST` as an example.
 
 ```c++
 nlohmann::json BinaryOperationAST::JsonTree() {
@@ -599,9 +599,9 @@ nlohmann::json BinaryOperationAST::JsonTree() {
 }
 ```
 
-The "lhs" and "rhs" key-value pairs are the one that contains children nodes. The `JsonTree` method of children are called to generate their JSON representation, and their returned JSON object are directly assigned to the corresponding key. In this way, a hierachy of nodes are created. 
+The "lhs" and "rhs" key-value pairs are the one that contains children nodes. The `JsonTree` method of children are called to generate their JSON representation, and their returned JSON object are directly assigned to the corresponding key. In this way, a hierachy of nodes are created.
 
-After a complete syntax tree is created, the `OnParsed` function will be called. 
+After a complete syntax tree is created, the `OnParsed` function will be called.
 
 ```c++
 void OnParsed() {
@@ -611,17 +611,55 @@ void OnParsed() {
   std::cout << "Parsed Syntax Tree:" << std::endl
             << ast->JsonTree().dump(4) << std::endl;
   ...
-  delete ast;
 }
 ```
 
-In the function, the `JsonTree` method of the root node will be called, which will treverse the whole tree and return the JSON object of it. The JSON object is then dumped to string with indentation of 4 spaces, which will be output to the screen. 
+In the function, the `JsonTree` method of the root node will be called, which will treverse the whole tree and return the JSON object of it. The JSON object is then dumped to string with indentation of 4 spaces, which will be output to the screen.
 
 #### Intermediate Representation
 
+LLVM IR is a famous intermediate representation around the world. It can be compiled into assembly code and binary and target for different platforms easily by using (LLVM Static Compiler)[http://llvm.org/]. The functions can also be JIT compiled and run through LLVM ORC Engine, which will be much faster than interpreter.
+
+The program create a global LLVM module named `blc` to contain all IR code. Since BLC respond to user input interactively, all instructions was generated in `main` function under `blc` module. All functions are generated as a LLVM function independently under `blc` module.
+
+For each node of abstract syntax tree, method `GenIR` defined the procedure of generating intermediate representation of it and its children. The `builder_` in `context` store the insertion point of IR code and provide a set of interface to insert IR easily.
+
+```c++
+Value* DoubleAST::GenIR(Context* context) {
+  return ConstantFP::get(Type::getFloatTy(context->llvm_context_), value_);
+}
+```
+
+Take the easiest AST, `DoubleAST`, as an example. It simply create a constant float in LLVM IR that represent the value it contains.
+
+```c++
+llvm::Value* FunctionAST::GenIR(Context* context) {
+  // Backup previous insertion point and block stack.
+  auto previous_block = context->builder_.GetInsertBlock();
+  auto previous_point = context->builder_.GetInsertPoint();
+  auto previous_block_stack = context->blocks_;
+  context->blocks_.clear();
+  context->blocks_.push_back(new BlockAST());
+
+  ...// Create function and set up arguments
+
+  // Generate function body.
+  auto ret = block_->GenIR(context);
+  context->builder_.CreateRet(ret);
+
+  // Resotre previous insertion point and block stack.
+  delete context->blocks_.front();
+  context->builder_.SetInsertPoint(previous_block, previous_point);
+  context->blocks_ = previous_block_stack;
+  return nullptr;
+}
+```
+
+For other ASTs like `FunctionAST`, the generation logic may be very complex. The previous insertion point and block stack have to be backuped before creating function and restored after generation of function body, which ensures the function will have a isolated symbol table.
+
 ## The integration of code and compilation guide
 
-The file structure of our project is as follows. 
+The file structure of our project is as follows.
 
 ```bash
 .
@@ -647,19 +685,19 @@ The file structure of our project is as follows.
 3 directories, 15 files
 ```
 
-Source code of the calculator project is stored in `src` directory. The file `ast.h` contains all the declarations of the abstract syntax tree classes, and the implementation of class methods are in `ast_expression.cpp` and `ast_statement.cpp`. `blc.l` and `blc.y` contains the code of lexer and syntax analyzer respectively. `Context` class is implemented in `context.hpp`, and `main.cpp` contains the `main` function and `OnParsed`. `Makefile` is the input file of `make`, which is used to compile the code. 
+Source code of the calculator project is stored in `src` directory. The file `ast.h` contains all the declarations of the abstract syntax tree classes, and the implementation of class methods are in `ast_expression.cpp` and `ast_statement.cpp`. `blc.l` and `blc.y` contains the code of lexer and syntax analyzer respectively. `Context` class is implemented in `context.hpp`, and `main.cpp` contains the `main` function and `OnParsed`. `Makefile` is the input file of `make`, which is used to compile the code.
 
-The root directory of the project contains the Visual Studio project file as well as readme and lincense documents. `third_party` directory contains code of third_party libraries the project used. 
+The root directory of the project contains the Visual Studio project file as well as readme and lincense documents. `third_party` directory contains code of third_party libraries the project used.
 
 ### Compile for macOS & Linux
 
-If users followed the installation guide previously in the report, they should be able to compile the code now. First go to the `src` directory, then enter the command below. 
+If users followed the installation guide previously in the report, they should be able to compile the code now. First go to the `src` directory, then enter the command below.
 
 ```bash
 make all
 ```
 
-After the command is finished, a file named `main` will be generated, which is the resulting program after compilation. Users can now run the `main` program and try out the functions of the calculator. 
+After the command is finished, a file named `main` will be generated, which is the resulting program after compilation. Users can now run the `main` program and try out the functions of the calculator.
 
 ```bash
 ./main
@@ -668,6 +706,6 @@ After the command is finished, a file named `main` will be generated, which is t
 
 ## Recommandation of Better Generators
 
-We recommand ANTLR as a better code generator. It is a BSD lincenced open source software and is actively being developed, which means the bugs are being fixed and new features are being added. It supports a large variety of languages, including Java, C#, C++, JavaScript and Python; and is used by many big-name projects, such as twitter and NetBeans IDE. Therefore, its reliability is tested by thousands of experienced developers. 
+We recommand ANTLR as a better code generator. It is a BSD lincenced open source software and is actively being developed, which means the bugs are being fixed and new features are being added. It supports a large variety of languages, including Java, C#, C++, JavaScript and Python; and is used by many big-name projects, such as twitter and NetBeans IDE. Therefore, its reliability is tested by thousands of experienced developers.
 
-Since it is widely used, the community of this generator is very active, which means users can get help more easily from the developers and other users. It also has detailed documentation as well as plugins for many popular IDEs, making the developing process more convenient and efficient. 
+Since it is widely used, the community of this generator is very active, which means users can get help more easily from the developers and other users. It also has detailed documentation as well as plugins for many popular IDEs, making the developing process more convenient and efficient.
