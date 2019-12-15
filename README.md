@@ -539,24 +539,7 @@ double BinaryOperationAST::Evaluate(Context* context) {
       return lhs + rhs;
     case '-':
       return lhs - rhs;
-    case '*':
-      return lhs * rhs;
-    case '/':
-      return lhs / rhs;
-    case '%':
-      return fmod(lhs, rhs);
-    case '>':
-      return lhs > rhs;
-    case '<':
-      return lhs < rhs;
-    case GEQ:
-      return lhs >= rhs;
-    case LEQ:
-      return lhs <= rhs;
-    case EQ:
-      return lhs == rhs;
-    case NE:
-      return lhs != rhs;
+    ...
     default:
       return 0;
   }
@@ -626,3 +609,10 @@ In the function, the `JsonTree` method of the root node will be called, which wi
 
 #### Intermediate Representation
 
+
+
+## Recommandation of Better Generators
+
+We recommand ANTLR as a better code generator. It is a BSD lincenced open source software and is actively being developed, which means the bugs are being fixed and new features are being added. It supports a large variety of languages, including Java, C#, C++, JavaScript and Python; and is used by many big-name projects, such as twitter and NetBeans IDE. Therefore, its reliability is tested by thousands of experienced developers. 
+
+Since it is widely used, the community of this generator is very active, which means users can get help more easily from the developers and other users. It also has detailed documentation as well as plugins for many popular IDEs, making the developing process more convenient and efficient. 
