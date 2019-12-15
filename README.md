@@ -2,6 +2,10 @@
 
 A simple calculator constructed by Bison and Flex.
 
+## Abstract
+
+This report is mainly talking about how a simple calculator, which is built by using flex and bison, works and user instructions to use its functions in details. The explanation of the code, in order to tell the how the calcultor is designed, is included in this report as well.
+
 ## Environments
 
 Building BLC requires folloing components:
