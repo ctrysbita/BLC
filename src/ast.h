@@ -29,8 +29,10 @@ class AST {
    * @brief A general interface for statements and expressions to run.
    *
    * @param context Context that store associated information.
+   * @return double Return value. 0 for statements and evaluated value for
+   * expressions.
    */
-  virtual void Run(Context* context) = 0;
+  virtual double Run(Context* context) = 0;
 
   /**
    * @brief Generate LLVM IR for current AST.
@@ -55,8 +57,12 @@ class StatementAST : public AST {
    * @brief Execute statement.
    *
    * @param context Context that store associated information.
+   * @return double Return 0 if successful executed.
    */
-  virtual void Run(Context* context) final override { Execute(context); };
+  virtual double Run(Context* context) final override {
+    Execute(context);
+    return 0;
+  };
 
   /**
    * @brief Execute current statement.
@@ -85,7 +91,7 @@ class ExpressionAST : public AST {
    *
    * @param context Context that store associated information.
    */
-  virtual void Run(Context* context) final override;
+  virtual double Run(Context* context) final override;
 
   /**
    * @brief Evaluate current expression.
@@ -308,4 +314,42 @@ class ExpressionAssignmentAST : public ExpressionAST {
 
   virtual double Evaluate(Context* context) override;
   virtual nlohmann::json JsonTree() override;
+};
+
+class FunctionCallAST : public ExpressionAST {
+ private:
+  IdentifierAST* name_;
+  std::vector<ExpressionAST*>* arguments_;
+
+ public:
+  FunctionCallAST(IdentifierAST* name, std::vector<ExpressionAST*>* arguments)
+      : name_(name), arguments_(arguments) {}
+  ~FunctionCallAST() {}
+
+  virtual double Evaluate(Context* context) override;
+  virtual nlohmann::json JsonTree() override;
+};
+
+class FunctionAST : public StatementAST {
+ private:
+  IdentifierAST* name_;
+  std::vector<IdentifierAST*>* arguments_;
+  BlockAST* block_;
+
+ public:
+  FunctionAST(IdentifierAST* name, std::vector<IdentifierAST*>* parameters,
+              BlockAST* block)
+      : name_(name), arguments_(parameters), block_(block) {}
+  ~FunctionAST() {
+    delete name_;
+    for (auto arg : *arguments_) delete arg;
+    delete arguments_;
+    delete block_;
+  }
+
+  virtual void Execute(Context* context) override;
+  virtual nlohmann::json JsonTree() override;
+  virtual llvm::Value* GenIR(Context* context) override;
+
+  friend class FunctionCallAST;
 };

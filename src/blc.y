@@ -18,10 +18,12 @@ extern AST* ast;
   IdentifierAST* identifier;
 
   std::list<AST*>* statements;
+  std::vector<IdentifierAST*>* arguments;
+  std::vector<ExpressionAST*>* call_args;
 }
 
 %token <value> IDENTIFIER DOUBLE_NUM
-%token EXPR IF ELSE WHILE
+%token DEFINE EXPR IF ELSE WHILE
 %right '='
 %left GEQ LEQ EQ NE
 %left '+' '-'
@@ -32,6 +34,8 @@ extern AST* ast;
 %type <statements> statements
 %type <identifier> identifier
 %type <expression> expression
+%type <arguments> arguments
+%type <call_args> call_args
 
 %start program
 
@@ -45,6 +49,7 @@ statement:
 ';' { $$ = new StatementAST(); }
 | '{' '}' { $$ = new StatementAST(); }
 | expression ';' { $<expression>$ = $1; }
+| DEFINE identifier '(' arguments ')' '{' statements '}' { $$ = new FunctionAST($2, $4, (new BlockAST())->WithChildren($7)); }
 | WHILE '(' expression ')' statement { $$ = new WhileAST($3, $5); }
 | IF '(' expression ')' statement optional_end { $$ = new IfAST($3, $5); }
 | IF '(' expression ')' statement ELSE statement { $$ = new IfAST($3, $5, $7); }
@@ -63,6 +68,7 @@ statement { $$ = new std::list<AST*>(); $$->push_back($1); }
 expression:
 DOUBLE_NUM { $$ = new DoubleAST($1); }
 | identifier { $$ = $1; }
+| identifier '(' call_args ')' { $$ = new FunctionCallAST($1, $3); }
 | identifier '=' expression { $$ = new VariableAssignmentAST($1, $3); }
 | EXPR identifier '=' expression { $$ = new ExpressionAssignmentAST($2, $4); }
 | '-' expression %prec ';' { $$ = new BinaryOperationAST('-', new DoubleAST(0.0), $2); }
@@ -78,6 +84,18 @@ DOUBLE_NUM { $$ = new DoubleAST($1); }
 | expression NE expression { $$ = new BinaryOperationAST(NE, $1, $3); }
 | expression EQ expression { $$ = new BinaryOperationAST(EQ, $1, $3); }
 | '(' expression ')' { $$ = $2; }
+;
+
+arguments:
+ { $$ = new std::vector<IdentifierAST*>(); }
+| identifier { $$ = new std::vector<IdentifierAST*>(); $$->push_back($1); }
+| arguments ',' identifier { $1->push_back($3); }
+;
+
+call_args:
+ { $$ = new std::vector<ExpressionAST*>(); }
+| expression { $$ = new std::vector<ExpressionAST*>(); $$->push_back($1); }
+| call_args ',' expression { $1->push_back($3); }
 ;
 
 identifier:

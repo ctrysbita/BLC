@@ -6,11 +6,14 @@
 #include "ast.h"
 #include "blc.tab.hpp"
 
+extern std::map<std::string, FunctionAST*> functions;
+
 using namespace llvm;
 
-void ExpressionAST::Run(Context* context) {
+double ExpressionAST::Run(Context* context) {
   auto result = Evaluate(context);
   std::cout << "=> " << result << std::endl;
+  return result;
 };
 
 double DoubleAST::Evaluate(Context* context) { return value_; }
@@ -219,5 +222,52 @@ nlohmann::json ExpressionAssignmentAST::JsonTree() {
   json["type"] = "ExpressionAssignment";
   json["identifier"] = name_->JsonTree();
   json["value"] = value_->JsonTree();
+  return json;
+}
+
+double FunctionCallAST::Evaluate(Context* context) {
+  auto func = functions[name_->get_name()];
+  if (!func) {
+    std::cout << "Error: Undefined function." << std::endl;
+    return 0;
+  }
+
+  if (arguments_->size() != func->arguments_->size()) {
+    std::cout << "Error: Function arguments mismatch." << std::endl;
+    return 0;
+  }
+
+  auto previous_block_stack = context->blocks_;
+  context->blocks_.clear();
+  context->blocks_.push_back(new BlockAST());
+
+  for (size_t i = 0; i < arguments_->size(); ++i)
+    context->blocks_.back()->set_symbol(
+        (*func->arguments_)[i]->get_name(),
+        BlockAST::SymbolType((*arguments_)[i]->Evaluate(context)));
+
+  // Stop output in function body.
+  std::cout.setstate(std::ios_base::badbit);
+  func->block_->Execute(context);
+  std::cout.clear();
+
+  // Get return value.
+  auto ret = context->blocks_.front()->get_symbol("$ret");
+
+  // Restore previous block stack.
+  delete context->blocks_.front();
+  context->blocks_ = previous_block_stack;
+
+  return std::get<double>(ret.value());
+}
+
+nlohmann::json FunctionCallAST::JsonTree() {
+  std::list<nlohmann::json> arguments;
+  for (auto argument : *arguments_) arguments.push_back(argument->JsonTree());
+
+  nlohmann::json json;
+  json["type"] = "FunctionCall";
+  json["identifier"] = name_->JsonTree();
+  json["arguments"] = arguments;
   return json;
 }

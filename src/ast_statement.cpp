@@ -3,6 +3,8 @@
 #include "ast.h"
 #include "blc.tab.hpp"
 
+extern std::map<std::string, FunctionAST*> functions;
+
 using namespace llvm;
 
 BlockAST* BlockAST::WithChildren(std::list<AST*>* asts) {
@@ -16,7 +18,8 @@ void BlockAST::Execute(Context* context) {
   context->blocks_.push_back(this);
 
   // Execute all statements in current block.
-  for (auto ast : children_) ast->Run(context);
+  for (auto ast : children_)
+    context->blocks_.front()->set_symbol("$ret", ast->Run(context));
 
   // Back to upper block.
   context->blocks_.pop_back();
@@ -146,4 +149,49 @@ Value* WhileAST::GenIR(Context* context) {
   context->builder_.SetInsertPoint(after);
 
   return Constant::getNullValue(Type::getInt32Ty(context->llvm_context_));
+}
+
+void FunctionAST::Execute(Context* context) {
+  if (functions.find(name_->get_name()) != functions.end())
+    delete functions[name_->get_name()];
+  functions[name_->get_name()] = this;
+}
+
+nlohmann::json FunctionAST::JsonTree() {
+  std::list<nlohmann::json> arguments;
+  for (auto argument : *arguments_) arguments.push_back(argument->JsonTree());
+
+  nlohmann::json json;
+  json["type"] = "Function";
+  json["arguments"] = arguments;
+  json["block"] = block_->JsonTree();
+  return json;
+}
+
+llvm::Value* FunctionAST::GenIR(Context* context) {
+  // Backup previous insertion point and block stack.
+  auto previous_block = context->builder_.GetInsertBlock();
+  auto previous_point = context->builder_.GetInsertPoint();
+  auto previous_block_stack = context->blocks_;
+
+  // Determine arguments type. Currently only double is available.
+  std::vector<Type*> args(arguments_->size(),
+                          Type::getDoubleTy(context->llvm_context_));
+
+  auto func = llvm::Function::Create(
+      llvm::FunctionType::get(llvm::Type::getDoubleTy(context->llvm_context_),
+                              args, false),
+      llvm::Function::ExternalLinkage, name_->get_name(),
+      context->llvm_module_);
+
+  auto entry = llvm::BasicBlock::Create(context->llvm_context_, "entry", func);
+  context->builder_.SetInsertPoint(entry);
+
+  context->blocks_.clear();
+  block_->GenIR(context);
+
+  // Resotre previous insertion point and block stack.
+  context->builder_.SetInsertPoint(previous_block, previous_point);
+  context->blocks_ = previous_block_stack;
+  return nullptr;
 }
