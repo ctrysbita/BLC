@@ -228,12 +228,12 @@ nlohmann::json ExpressionAssignmentAST::JsonTree() {
 double FunctionCallAST::Evaluate(Context* context) {
   auto func = functions[name_->get_name()];
   if (!func) {
-    std::cout << "Error: Undefined function." << std::endl;
+    std::cerr << "Error: Undefined function." << std::endl;
     return 0;
   }
 
   if (arguments_->size() != func->arguments_->size()) {
-    std::cout << "Error: Function arguments mismatch." << std::endl;
+    std::cerr << "Error: Function arguments mismatch." << std::endl;
     return 0;
   }
 
@@ -270,4 +270,17 @@ nlohmann::json FunctionCallAST::JsonTree() {
   json["identifier"] = name_->JsonTree();
   json["arguments"] = arguments;
   return json;
+}
+
+Value* FunctionCallAST::GenIR(Context* context) {
+  auto func = context->llvm_module_.getFunction(name_->get_name());
+  if (!func) {
+    std::cerr << "Error: Undefined function." << std::endl;
+    return nullptr;
+  }
+
+  std::vector<Value*> arguments;
+  for (auto arg : *arguments_) arguments.push_back(arg->GenIR(context));
+
+  return context->builder_.CreateCall(func, arguments);
 }
