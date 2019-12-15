@@ -525,6 +525,54 @@ The following of this part will explain three traversers one by one.
 
 #### Interpreter
 
+In the `ast_expression.cpp` file, the method `Evaluate()` shows how the interpreter works. Meanwhile, in the `ast_statement.cpp` , the method `Execute()` has the same function.
+
+```c++
+double DoubleAST::Evaluate(Context* context) { return value_; }
+
+double BinaryOperationAST::Evaluate(Context* context) {
+  auto lhs = lhs_->Evaluate(context);
+  auto rhs = rhs_->Evaluate(context);
+
+  switch (type_) {
+    case '+':
+      return lhs + rhs;
+    case '-':
+      return lhs - rhs;
+    case '*':
+      return lhs * rhs;
+    case '/':
+      return lhs / rhs;
+    case '%':
+      return fmod(lhs, rhs);
+    case '>':
+      return lhs > rhs;
+    case '<':
+      return lhs < rhs;
+    case GEQ:
+      return lhs >= rhs;
+    case LEQ:
+      return lhs <= rhs;
+    case EQ:
+      return lhs == rhs;
+    case NE:
+      return lhs != rhs;
+    default:
+      return 0;
+  }
+}
+```
+
+In the `ast_expression.cpp` file, it shows that how a interpreter returns a double number or an identifier, presents the binary operations, variable assignment and expression assignment. Take binary operation as an example, the method `Evaluate()` evaluate the result while reading the input, and finally return the result.
+
+```c++
+void WhileAST::Execute(Context* context) {
+  while (condition_->Evaluate(context)) statement_->Run(context);
+}
+```
+
+The `Execute()` method, which is objected to `statement` , also has the similiar features as `Evaluate()` method. Take `Execute()` in `WhileAST`  as an example, it first uses `Evaluate()`  to check the condition, then uses `Run()` to execute the statement, and eventually return the  result.
+
 #### JSON Tree
 
 This traverser creates a JSON tree and prints it. JSON is a data format consisting of key-value pairs and array types. Take `DoubleAST` as an example, the code of JSON tree traverser is as follows. 
