@@ -226,7 +226,22 @@ nlohmann::json ExpressionAssignmentAST::JsonTree() {
 }
 
 double FunctionCallAST::Evaluate(Context* context) {
-  auto func = functions[name_->get_name()];
+  auto name = name_->get_name();
+  if (arguments_->size() >= 1) {
+    if ("sin" == name)
+      return sin((*arguments_)[0]->Evaluate(context));
+    else if ("cos" == name)
+      return cos((*arguments_)[0]->Evaluate(context));
+    else if ("tan" == name)
+      return tan((*arguments_)[0]->Evaluate(context));
+    else if ("sqrt" == name)
+      return sqrt((*arguments_)[0]->Evaluate(context));
+    else if ("pow" == name && arguments_->size() == 2)
+      return pow((*arguments_)[0]->Evaluate(context),
+                 (*arguments_)[1]->Evaluate(context));
+  }
+
+  auto func = functions[name];
   if (!func) {
     std::cerr << "Error: Undefined function." << std::endl;
     return 0;
@@ -273,6 +288,16 @@ nlohmann::json FunctionCallAST::JsonTree() {
 }
 
 Value* FunctionCallAST::GenIR(Context* context) {
+  auto name = name_->get_name();
+
+  // TODO: Allow linking external built-in function.
+  if ("sin" == name || "cos" == name || "tan" == name || "sqrt" == name ||
+      "pow" == name) {
+    std::cerr << "Warning: Built-in functions not supported with LLVM IR."
+              << std::endl;
+    return ConstantFP::get(Type::getFloatTy(context->llvm_context_), 0);
+  }
+
   auto func = context->llvm_module_.getFunction(name_->get_name());
   if (!func) {
     std::cerr << "Error: Undefined function." << std::endl;
