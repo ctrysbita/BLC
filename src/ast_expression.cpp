@@ -225,6 +225,30 @@ nlohmann::json ExpressionAssignmentAST::JsonTree() {
   return json;
 }
 
+Value* ExpressionAssignmentAST::GenIR(Context* context) {
+  // TODO: Support expr.
+  std::cerr << "Warning: Expression assignment not supported with LLVM IR. "
+               "Your instruction will be regarded as variable assignment in IR."
+            << std::endl;
+
+  Value* value = value_->GenIR(context);
+
+  for (auto it = context->blocks_.rbegin(); it != context->blocks_.rend();
+       ++it) {
+    auto symbol = (*it)->get_llvm_symbol(name_->get_name());
+    if (symbol) {
+      context->builder_.CreateStore(value, symbol);
+      return symbol;
+    }
+  }
+
+  auto instruction = context->builder_.CreateAlloca(
+      Type::getFloatTy(context->llvm_context_), nullptr, name_->get_name());
+  context->builder_.CreateStore(value, instruction);
+  context->blocks_.back()->set_llvm_symbol(name_->get_name(), instruction);
+  return instruction;
+}
+
 double FunctionCallAST::Evaluate(Context* context) {
   auto name = name_->get_name();
   if (arguments_->size() >= 1) {
