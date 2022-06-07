@@ -1,6 +1,6 @@
 # BLC
 
-A basic calculator constructed by Bison, Flex and LLVM.
+A basic calculator constructed by Bison, Flex and LLVM. ([Wiki](https://github.com/ctrysbita/BLC/wiki))
 
 ## Environments
 
